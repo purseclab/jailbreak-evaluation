@@ -54,6 +54,10 @@ def insert_data_point_list_to_mongodb(data_point_list: List[DataPoint]):
     password = os.environ.get("MONGODB_PASSWORD")
     endpoint = os.environ.get("MONGODB_ENDPOINT")
 
+    assert username
+    assert password
+    assert endpoint
+
     uri = f"mongodb+srv://{username}:{password}@{endpoint}/?retryWrites=true&w=majority"
     client = MongoClient(uri, server_api=ServerApi("1"))
     client.admin.command("ping")
