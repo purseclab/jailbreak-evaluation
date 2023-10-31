@@ -1,6 +1,6 @@
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 import pickle
 import os
 import datetime
@@ -18,6 +18,7 @@ class DataPoint:
     model_id: int
     publication_id: int
     publication_report_jailbreak_label: bool  # False: not jailbreak, True: jailbreak
+    publication_report_jailbreak_label_confidence: Optional[float] = None
 
     def __post_init__(self):
         models = ["Llama-2-7b-chat-hf"]
