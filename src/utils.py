@@ -50,7 +50,7 @@ def handle_data_point(data_point: DataPoint, timestamp: datetime.datetime):
     return v
 
 
-def insert_data_point_list_to_mongodb(data_point_list: List[DataPoint]):
+def connect_to_mongodb() -> MongoClient:
     username = os.environ.get("MONGODB_USERNAME")
     password = os.environ.get("MONGODB_PASSWORD")
     endpoint = os.environ.get("MONGODB_ENDPOINT")
@@ -63,7 +63,13 @@ def insert_data_point_list_to_mongodb(data_point_list: List[DataPoint]):
     client = MongoClient(uri, server_api=ServerApi("1"))
     client.admin.command("ping")
 
-    db = client["main_database"]
+    return client
+
+
+def insert_data_point_list_to_mongodb(
+    mongodb_client: MongoClient, data_point_list: List[DataPoint]
+):
+    db = mongodb_client["main_database"]
     data_point_collection = db["data_point_collection"]
 
     timestamp = datetime.datetime.utcnow()
@@ -74,9 +80,11 @@ def insert_data_point_list_to_mongodb(data_point_list: List[DataPoint]):
 
 
 if __name__ == "__main__":
+    mongodb_client = connect_to_mongodb()
     insert_data_point_list_to_mongodb(
+        mongodb_client,
         [
             DataPoint("in", "q", "a", 0, 0, False),
             DataPoint("in2", "q2", "a2", 0, 0, True),
-        ]
+        ],
     )
