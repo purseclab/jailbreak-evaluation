@@ -30,6 +30,7 @@ class DataPoint:
         assert self.publication_id in range(
             len(publications)
         ), f"publication must be in {publications}"
+        assert isinstance(self.publication_report_jailbreak_label, bool)
 
 
 def save_data_point_list_to_pickle(data_point_list: List[DataPoint], pickle_path: Path):
