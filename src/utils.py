@@ -23,7 +23,8 @@ class DataPoint:
     def __post_init__(self):
         models = ["Llama-2-7b-chat-hf"]
         publications = [
-            "Universal and Transferable Adversarial Attacks on Aligned Language Models"
+            "Universal and Transferable Adversarial Attacks on Aligned Language Models",
+            "Catastrophic Jailbreak of Open-source LLMs via Exploiting Generation"
         ]
 
         assert self.model_id in range(len(models)), f"model must be in {models}"
