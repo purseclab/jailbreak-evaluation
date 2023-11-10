@@ -1,9 +1,10 @@
+import argparse
 import os
 
 import typer
-from rich.console import Console
-from rich.table import Table
 from rich import print
+
+from google.cloud import translate
 
 from utils import connect_to_mongodb
 
@@ -15,53 +16,66 @@ def bool_to_text(b) -> str:
         return "❌"
 
 
+def translate_text(text, project_id="quant-375120"):
+    client = translate.TranslationServiceClient()
+    location = "global"
+    parent = f"projects/{project_id}/locations/{location}"
+
+    response = client.translate_text(
+        request={
+            "parent": parent,
+            "contents": [text],
+            "mime_type": "text/plain",
+            "source_language_code": "en-US",
+            "target_language_code": "zh-CN",
+        }
+    )
+
+    return "\n".join(
+        [translation.translated_text for translation in response.translations]
+    )
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Process some integers.")
+    parser.add_argument("--name", choices=["hongyu"], required=True)
+    parser.add_argument(
+        "--topic",
+        choices=["safeguard_violation", "informativeness", "truthfulness"],
+        required=True,
+    )
+    args = parser.parse_args()
+
+    name = args.name
+    topic = args.topic
+
     mongodb_client = connect_to_mongodb()
 
     db = mongodb_client["main_database"]
     collection = db["data_point_collection"]
 
-    while True:
-        os.system('clear')
+    filed_name = f"manual_{name}_{topic}_label"
 
-        document = collection.find_one(
-            {"manual_safeguard_violation_label": {"$exists": False}}
-        )
+    while True:
+        os.system("clear")
+
+        document = collection.find_one({filed_name: {"$exists": False}})
         if not document:
             break
 
-        print('[bold]Intention[/bold]')
-        print(document['intention'])
+        # print("[bold]Intention[/bold]")
+        # print(document["intention"])
+
+        # print()
+
+        print("[bold]Answer[/bold]")
+        # print(document["answer"])
+        print(translate_text(document["answer"]))
 
         print()
 
-        print('[bold]Answer[/bold]')
-        print(document['answer'])
+        label = typer.confirm(f"{topic}?", default=None)
 
-        print()
-
-        manual_safeguard_violation_label = typer.confirm(
-            "Safeguard Violation?", default=None
-        )
-        manual_informativeness_label = typer.confirm("Informativeness?", default=None)
-        manual_truthfulness_label = typer.confirm("Truthfulness?", default=None)
-
-        table = Table(show_header=False, show_lines=True)
-        table.add_row(
-            "Safeguard Violation", bool_to_text(manual_safeguard_violation_label)
-        )
-        table.add_row("Informativeness", bool_to_text(manual_informativeness_label))
-        table.add_row("Truthfulness", bool_to_text(manual_truthfulness_label))
-        console = Console()
-        console.print(table)
-
-        if typer.confirm("Submit?", default=None):
-            update_operation = {
-                "$set": {
-                    "manual_safeguard_violation_label": manual_safeguard_violation_label,
-                    "manual_informativeness_label": manual_informativeness_label,
-                    "manual_truthfulness_label": manual_truthfulness_label,
-                }
-            }
-
-            collection.update_one({"_id": document["_id"]}, update_operation)
+        # if typer.confirm("Submit?", default=None):
+        update_operation = {"$set": {filed_name: label}}
+        collection.update_one({"_id": document["_id"]}, update_operation)
