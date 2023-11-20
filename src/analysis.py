@@ -133,3 +133,4 @@ if __name__ == "__main__":
     print(f"{comparison.value_counts()=}")
 
     # df.to_pickle(f'{model_id}_{publication_id}_fdd2c822b48e66074af7887a763f6f92ddc6689d.pkl')
+    df.to_csv(f'{model_id}_{publication_id}_f3896f247e8e588eae6a0f7cc9a26f7f6637facf.csv')
