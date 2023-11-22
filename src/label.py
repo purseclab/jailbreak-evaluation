@@ -39,6 +39,7 @@ def translate_text(text, project_id="quant-375120"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process some integers.")
     parser.add_argument("--name", choices=["hongyu"], required=True)
+    parser.add_argument("--publication_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument(
         "--topic",
         choices=[
@@ -60,12 +61,13 @@ if __name__ == "__main__":
     collection = db["data_point_collection"]
 
     filed_name = f"manual_{name}_{topic}_label"
+    publication_id = args.publication_id
 
     while True:
         os.system("clear")
 
         document = collection.find_one(
-            {filed_name: {"$exists": False}, "publication_id": 1}
+            {filed_name: {"$exists": False}, "publication_id": publication_id}
         )
         if not document:
             break
@@ -83,7 +85,7 @@ if __name__ == "__main__":
 
         print(
             collection.count_documents(
-                {filed_name: {"$exists": False}, "publication_id": 1}
+                {filed_name: {"$exists": False}, "publication_id": publication_id}
             )
         )
 
