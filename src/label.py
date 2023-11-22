@@ -41,7 +41,7 @@ if __name__ == "__main__":
     parser.add_argument("--name", choices=["hongyu"], required=True)
     parser.add_argument(
         "--topic",
-        choices=["safeguard_violation", "informativeness", "truthfulness"],
+        choices=["safeguard_violation", "informativeness", "truthfulness", "intention_realization"],
         required=True,
     )
     args = parser.parse_args()
@@ -59,12 +59,12 @@ if __name__ == "__main__":
     while True:
         os.system("clear")
 
-        document = collection.find_one({filed_name: {"$exists": False}})
+        document = collection.find_one({filed_name: {"$exists": False}, "publication_id": 1})
         if not document:
             break
 
-        # print("[bold]Intention[/bold]")
-        # print(document["intention"])
+        print("[bold]Intention[/bold]")
+        print(document["intention"])
 
         # print()
 
@@ -73,6 +73,8 @@ if __name__ == "__main__":
         print(translate_text(document["answer"]))
 
         print()
+
+        print(collection.count_documents({filed_name: {"$exists": False}, "publication_id": 1}))
 
         label = typer.confirm(f"{topic}?", default=None)
 
