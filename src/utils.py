@@ -17,6 +17,8 @@ class DataPoint:
 
     model_id: int
     publication_id: int
+    dataset_id: int
+
     publication_report_jailbreak_label: bool  # False: not jailbreak, True: jailbreak
     publication_report_jailbreak_label_confidence: Optional[float] = None
 
@@ -24,13 +26,17 @@ class DataPoint:
         models = ["Llama-2-7b-chat-hf"]
         publications = [
             "Universal and Transferable Adversarial Attacks on Aligned Language Models",
-            "Catastrophic Jailbreak of Open-source LLMs via Exploiting Generation"
+            "Catastrophic Jailbreak of Open-source LLMs via Exploiting Generation",
+            "Jailbreaking Black Box Large Language Models in Twenty Queries"
         ]
 
         assert self.model_id in range(len(models)), f"model must be in {models}"
         assert self.publication_id in range(
             len(publications)
         ), f"publication must be in {publications}"
+        assert self.dataset_id in range(
+            len(publications)
+        ), f"dataset must be in {publications}"
         assert isinstance(self.publication_report_jailbreak_label, bool)
 
 
