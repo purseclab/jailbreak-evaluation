@@ -86,6 +86,8 @@ def insert_data_point_list_to_mongodb(
         [handle_data_point(data_point, timestamp) for data_point in data_point_list]
     )
 
+    
+
 
 if __name__ == "__main__":
     mongodb_client = connect_to_mongodb()
