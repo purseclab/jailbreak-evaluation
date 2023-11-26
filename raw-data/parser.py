@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 
-directory = "./penn"
+directory = "./penn/advbench-100"
 output_directory = "../raw-csv"
 output_df = pd.DataFrame()
 for filename in os.listdir(directory):
@@ -24,4 +24,4 @@ for filename in os.listdir(directory):
         output_df = output_df._append(max_score_rows.iloc[-1])
 
 output_df = output_df.drop(output_df.columns[0], axis=1)
-output_df.to_csv(os.path.join(output_directory, "penn.csv"), index=False)
+output_df.to_csv(os.path.join(output_directory, "penn-advbench-100.csv"), index=False)
