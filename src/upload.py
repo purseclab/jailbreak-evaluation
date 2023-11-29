@@ -24,39 +24,39 @@ load_dotenv()
 
 
 
-princeton_data_points = []
-with open("../raw-csv/princeton-advbench-100.csv", "r") as f:
-    reader = csv.reader(f)
-    next(reader)
-    for row in reader:
-        intention = row[0]
-        question = row[0]
-        answer = row[1]
-        model_id = 0
-        publication_id = 1
-        dataset_id = 0
-        publication_report_jailbreak_label = bool(row[3])
-        publication_report_jailbreak_label_confidence = row[2]
-        princeton_data_points.append(DataPoint(intention=intention, question=question, answer=answer, model_id=model_id, publication_id=publication_id, dataset_id=dataset_id, publication_report_jailbreak_label=publication_report_jailbreak_label, publication_report_jailbreak_label_confidence=publication_report_jailbreak_label_confidence))
+# princeton_data_points = []
+# with open("../raw-csv/princeton-advbench-100.csv", "r") as f:
+#     reader = csv.reader(f)
+#     next(reader)
+#     for row in reader:
+#         intention = row[0]
+#         question = row[0]
+#         answer = row[1]
+#         model_id = 0
+#         publication_id = 1
+#         dataset_id = 0
+#         publication_report_jailbreak_label = bool(row[3])
+#         publication_report_jailbreak_label_confidence = row[2]
+#         princeton_data_points.append(DataPoint(intention=intention, question=question, answer=answer, model_id=model_id, publication_id=publication_id, dataset_id=dataset_id, publication_report_jailbreak_label=publication_report_jailbreak_label, publication_report_jailbreak_label_confidence=publication_report_jailbreak_label_confidence))
 
 
-# penn_data_points = []
-# df = pd.read_csv("../raw-csv/penn-advbench-100.csv")
+penn_data_points = []
+df = pd.read_csv("../raw-csv/penn-advbench-100-gpt-3.5-turbo.csv")
 
-# for index, row in df.iterrows():
-#     intention = row['original_goal']
-#     question = row['prompt']
-#     answer = row['target_response']
-#     model_id = 0
-#     publication_id = 2
-#     dataset_id = 0
-#     publication_report_jailbreak_label = row['is_jailbroken']
-#     publication_report_jailbreak_label_confidence = row['judge_scores']
-#     penn_data_points.append(DataPoint(intention=intention, question=question, answer=answer, model_id=model_id, publication_id=publication_id, dataset_id=dataset_id, publication_report_jailbreak_label=publication_report_jailbreak_label, publication_report_jailbreak_label_confidence=publication_report_jailbreak_label_confidence))
+for index, row in df.iterrows():
+    intention = row['original_goal']
+    question = row['prompt']
+    answer = row['target_response']
+    model_id = 1
+    publication_id = 2
+    dataset_id = 0
+    publication_report_jailbreak_label = row['is_jailbroken']
+    publication_report_jailbreak_label_confidence = row['judge_scores']
+    penn_data_points.append(DataPoint(intention=intention, question=question, answer=answer, model_id=model_id, publication_id=publication_id, dataset_id=dataset_id, publication_report_jailbreak_label=publication_report_jailbreak_label, publication_report_jailbreak_label_confidence=publication_report_jailbreak_label_confidence))
 
 mongo_client = connect_to_mongodb()
 
 # # insert_data_point_list_to_mongodb(mongo_client, cmu_data_points)
-insert_data_point_list_to_mongodb(mongo_client, princeton_data_points)
+insert_data_point_list_to_mongodb(mongo_client, penn_data_points)
 # insert_data_point_list_to_mongodb(mongo_client, penn_data_points)
 
