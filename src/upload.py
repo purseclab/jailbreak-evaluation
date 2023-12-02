@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 import csv
-# import DataPoint from utils.py
 from utils import DataPoint, connect_to_mongodb, insert_data_point_list_to_mongodb
 import pandas as pd
+import sys
 
 load_dotenv()
 
@@ -22,41 +22,62 @@ load_dotenv()
 
 # # print(cmu_data_points[5])
 
+def upload_princeton(input_csv, model_id, dataset_id):
+    def create_data_point(row):
+        return DataPoint(
+        intention=row['Input'],
+        question=row['Input'],
+        answer=row['Output'],
+        model_id=model_id,
+        publication_id=1,
+        dataset_id=dataset_id,
+        publication_report_jailbreak_label=bool(row['Jailbreak']),
+        publication_report_jailbreak_label_confidence=float(row['Score'])
+    )
+
+    df = pd.read_csv(input_csv)
+    princeton_data_points = df.apply(create_data_point, axis=1).tolist()
+    
+    mongo_client = connect_to_mongodb()
+    insert_data_point_list_to_mongodb(mongo_client, princeton_data_points)
+
+def upload_penn(input_csv, model_id, dataset_id):
+    def create_data_point(row):
+        return DataPoint(
+        intention=row['original_goal'],
+        question=row['prompt'],
+        answer=row['target_response'],
+        model_id=model_id,
+        publication_id=2,
+        dataset_id=dataset_id,
+        publication_report_jailbreak_label=bool(row['is_jailbroken']),
+        publication_report_jailbreak_label_confidence=float(row['judge_scores'])
+    )
+
+    df = pd.read_csv(input_csv)
+    penn_data_points = df.apply(create_data_point, axis=1).tolist()
+    
+    mongo_client = connect_to_mongodb()
+    insert_data_point_list_to_mongodb(mongo_client, penn_data_points)
 
 
-princeton_data_points = []
-with open("../raw-csv/princeton-advbench-100.csv", "r") as f:
-    reader = csv.reader(f)
-    next(reader)
-    for row in reader:
-        intention = row[0]
-        question = row[0]
-        answer = row[1]
-        model_id = 0
-        publication_id = 1
-        dataset_id = 0
-        publication_report_jailbreak_label = bool(row[3])
-        publication_report_jailbreak_label_confidence = row[2]
-        princeton_data_points.append(DataPoint(intention=intention, question=question, answer=answer, model_id=model_id, publication_id=publication_id, dataset_id=dataset_id, publication_report_jailbreak_label=publication_report_jailbreak_label, publication_report_jailbreak_label_confidence=publication_report_jailbreak_label_confidence))
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python upload.py <penn|princeton>")
+        sys.exit(1)
 
+    if sys.argv[1] == 'princeton' and len(sys.argv) < 4:
+        print("Usage: python upload.py princeton <input_csv> <model_id> <dataset_id>")
+        sys.exit(1)
+    elif sys.argv[1] == 'princeton' and len(sys.argv) == 4:
+        upload_princeton(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
 
-# penn_data_points = []
-# df = pd.read_csv("../raw-csv/penn-advbench-100.csv")
+    if sys.argv[1] == 'penn' and len(sys.argv) < 4:
+        print("Usage: python upload.py penn <input_csv> <model_id> <dataset_id>")
+        sys.exit(1)
+    elif sys.argv[1] == 'penn' and len(sys.argv) == 4:
+        upload_penn(sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
 
-# for index, row in df.iterrows():
-#     intention = row['original_goal']
-#     question = row['prompt']
-#     answer = row['target_response']
-#     model_id = 0
-#     publication_id = 2
-#     dataset_id = 0
-#     publication_report_jailbreak_label = row['is_jailbroken']
-#     publication_report_jailbreak_label_confidence = row['judge_scores']
-#     penn_data_points.append(DataPoint(intention=intention, question=question, answer=answer, model_id=model_id, publication_id=publication_id, dataset_id=dataset_id, publication_report_jailbreak_label=publication_report_jailbreak_label, publication_report_jailbreak_label_confidence=publication_report_jailbreak_label_confidence))
-
-mongo_client = connect_to_mongodb()
-
-# # insert_data_point_list_to_mongodb(mongo_client, cmu_data_points)
-insert_data_point_list_to_mongodb(mongo_client, princeton_data_points)
-# insert_data_point_list_to_mongodb(mongo_client, penn_data_points)
+if __name__ == "__main__":
+    main()
 
