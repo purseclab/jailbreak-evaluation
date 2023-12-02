@@ -41,6 +41,7 @@ if __name__ == "__main__":
     parser.add_argument("--name", choices=["hongyu"], required=True)
     parser.add_argument("--publication_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument("--dataset_id", choices=[0, 1, 2], required=True, type=int)
+    parser.add_argument("--dataset_version", choices=[0, 1], required=True, type=int)
     parser.add_argument(
         "--topic",
         choices=[
@@ -64,12 +65,13 @@ if __name__ == "__main__":
     filed_name = f"manual_{name}_{topic}_label"
     publication_id = args.publication_id
     dataset_id = args.dataset_id
+    dataset_version = args.dataset_version
 
     while True:
         os.system("clear")
 
         document = collection.find_one(
-            {filed_name: {"$exists": False}, "publication_id": publication_id, "dataset_id": dataset_id},
+            {filed_name: {"$exists": False}, "publication_id": publication_id, "dataset_id": dataset_id, "dataset_version": dataset_version}
         )
         if not document:
             break
@@ -87,7 +89,7 @@ if __name__ == "__main__":
 
         print(
             collection.count_documents(
-                {filed_name: {"$exists": False}, "publication_id": publication_id, "dataset_id": dataset_id}
+                {filed_name: {"$exists": False}, "publication_id": publication_id, "dataset_id": dataset_id, "dataset_version": dataset_version}
             )
         )
 
