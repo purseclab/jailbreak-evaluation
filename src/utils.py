@@ -18,6 +18,7 @@ class DataPoint:
     model_id: int
     publication_id: int
     dataset_id: int
+    dataset_version: int
 
     publication_report_jailbreak_label: bool  # False: not jailbreak, True: jailbreak
     publication_report_jailbreak_label_confidence: Optional[float] = None
@@ -37,6 +38,7 @@ class DataPoint:
         assert self.dataset_id in range(
             len(publications)
         ), f"dataset must be in {publications}"
+        assert self.dataset_version in [0,1], f"dataset version must be 0 (original) or 1 (add period)"
         assert isinstance(self.publication_report_jailbreak_label, bool)
 
 
