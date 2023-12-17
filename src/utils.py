@@ -88,6 +88,19 @@ def insert_data_point_list_to_mongodb(
         [handle_data_point(data_point, timestamp) for data_point in data_point_list]
     )
 
+def get_random_data_point_from_mongodb(mongodb_client: MongoClient) -> DataPoint:
+    db = mongodb_client["main_database"]
+    data_point_collection = db["data_point_collection"]
+
+    document = data_point_collection.aggregate(
+        [{"$sample": {"size": 1}}]
+    ).next()
+
+    data_point_fields = {k: v for k, v in document.items() if k in DataPoint.__dataclass_fields__}
+
+    print(data_point_fields)
+    
+    return DataPoint(**data_point_fields)
     
 
 
