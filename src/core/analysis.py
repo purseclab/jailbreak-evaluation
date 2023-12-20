@@ -115,22 +115,22 @@ if __name__ == "__main__":
     #     axis=1,
     # )
 
-    df["lmjudge_is_safeguard_violation"] = df.progress_apply(
-        lambda row: lmjudge.is_safeguard_violation(
-            None, row["answer"], row["manual_hongyu_safeguard_violation_label"]
-        ),
-        axis=1,
-    )
+    # df["lmjudge_is_safeguard_violation"] = df.progress_apply(
+    #     lambda row: lmjudge.is_safeguard_violation(
+    #         None, row["answer"], row["manual_hongyu_safeguard_violation_label"]
+    #     ),
+    #     axis=1,
+    # )
 
-    print(df)
+    # print(df)
 
-    lmjudge_is_safeguard_violation_column = df["lmjudge_is_safeguard_violation"]
-    publication_report_jailbreak_label_column = df["publication_report_jailbreak_label"]
-    comparison = (
-        lmjudge_is_safeguard_violation_column
-        == publication_report_jailbreak_label_column
-    )
-    print(f"{comparison.value_counts()=}")
+    # lmjudge_is_safeguard_violation_column = df["lmjudge_is_safeguard_violation"]
+    # publication_report_jailbreak_label_column = df["publication_report_jailbreak_label"]
+    # comparison = (
+    #     lmjudge_is_safeguard_violation_column
+    #     == publication_report_jailbreak_label_column
+    # )
+    # print(f"{comparison.value_counts()=}")
 
     # df.to_pickle(f'{model_id}_{publication_id}_fdd2c822b48e66074af7887a763f6f92ddc6689d.pkl')
-    df.to_csv(f'{model_id}_{publication_id}_f3896f247e8e588eae6a0f7cc9a26f7f6637facf.csv')
+    df.to_csv(f'{model_id}_{publication_id}_fa25c70fed6265b3a6691759c6a0b5a1a691d13a.csv')
