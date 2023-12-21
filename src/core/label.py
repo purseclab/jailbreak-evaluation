@@ -68,7 +68,7 @@ if __name__ == "__main__":
             case "huang":
                 evaluation = HuangEvaluation()
             case "chao":
-                evaluation = ChaoEvaluation()
+                evaluation = ChaoEvaluation("gpt-4")
             case _:
                 raise NotImplementedError()
 
