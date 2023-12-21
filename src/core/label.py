@@ -1,12 +1,14 @@
 import argparse
+import itertools
 import os
-
-import typer
-from rich import print
-
-from google.cloud import translate
+import sys
 
 from utils import connect_to_mongodb
+
+
+def add_proj_to_PYTHONPATH():
+    proj_path = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    sys.path.append(proj_path)
 
 
 def bool_to_text(b) -> str:
@@ -16,27 +18,15 @@ def bool_to_text(b) -> str:
         return "❌"
 
 
-def translate_text(text, project_id="quant-375120"):
-    client = translate.TranslationServiceClient()
-    location = "global"
-    parent = f"projects/{project_id}/locations/{location}"
-
-    response = client.translate_text(
-        request={
-            "parent": parent,
-            "contents": [text],
-            "mime_type": "text/plain",
-            "source_language_code": "en-US",
-            "target_language_code": "zh-CN",
-        }
-    )
-
-    return "\n".join(
-        [translation.translated_text for translation in response.translations]
-    )
-
-
 if __name__ == "__main__":
+    add_proj_to_PYTHONPATH()
+    from src.hypnotist.evaluation import (
+        ManualEvaluation,
+        ZouEvaluation,
+        HuangEvaluation,
+        ChaoEvaluation,
+    )
+
     manual_name_list = ["hongyu"]
     automatic_name_list = ["zou", "huang", "chao"]
 
@@ -54,6 +44,7 @@ if __name__ == "__main__":
             "safeguard_violation",
             "informativeness",
             "relative_truthfulness",
+            "none",
         ],
         required=True,
     )
@@ -68,10 +59,20 @@ if __name__ == "__main__":
 
     if mode == "manual":
         assert name in manual_name_list
+        evaluation = ManualEvaluation()
     else:
         assert name in automatic_name_list
+        match name:
+            case "zou":
+                evaluation = ZouEvaluation()
+            case "huang":
+                evaluation = HuangEvaluation()
+            case "chao":
+                evaluation = ChaoEvaluation()
+            case _:
+                raise NotImplementedError()
 
-    assert mode == "manual"
+    # assert mode == "manual"
 
     mongodb_client = connect_to_mongodb()
 
@@ -80,8 +81,9 @@ if __name__ == "__main__":
 
     filed_name = f"{mode}_{name}_{topic}_label"
 
-    while True:
-        os.system("clear")
+    for i in itertools.count():
+        if mode == "manual":
+            os.system("clear")
 
         document = collection.find_one(
             {
@@ -94,30 +96,37 @@ if __name__ == "__main__":
         if not document:
             break
 
-        print("[bold]Intention[/bold]")
-        print(document["intention"])
-
-        # print()
-
-        print("[bold]Answer[/bold]")
-        # print(document["answer"])
-        print(translate_text(document["answer"]))
-
-        print()
-
-        print(
-            collection.count_documents(
-                {
-                    filed_name: {"$exists": False},
-                    "publication_id": publication_id,
-                    "dataset_id": dataset_id,
-                    "dataset_version": dataset_version,
-                }
+        if mode == "manual":
+            print(
+                collection.count_documents(
+                    {
+                        filed_name: {"$exists": False},
+                        "publication_id": publication_id,
+                        "dataset_id": dataset_id,
+                        "dataset_version": dataset_version,
+                    }
+                )
             )
-        )
+        else:
+            print(i)
 
-        label = typer.confirm(f"{topic}?", default=None)
+        if mode == "manual":
+            labels = evaluation(
+                "",
+                [document["intent"]],
+                [document["response"]],
+                topic,
+            )
+        else:
+            labels = evaluation(
+                "",
+                [document["intent"]],
+                [document["response"]],
+            )
 
-        # if typer.confirm("Submit?", default=None):
+        assert len(labels) == 1
+        label = labels[0]
+        assert isinstance(label, bool)
+
         update_operation = {"$set": {filed_name: label}}
         collection.update_one({"_id": document["_id"]}, update_operation)
