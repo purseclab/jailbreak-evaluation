@@ -71,7 +71,12 @@ if __name__ == "__main__":
         os.system("clear")
 
         document = collection.find_one(
-            {filed_name: {"$exists": False}, "publication_id": publication_id, "dataset_id": dataset_id, "dataset_version": dataset_version}
+            {
+                filed_name: {"$exists": False},
+                "publication_id": publication_id,
+                "dataset_id": dataset_id,
+                "dataset_version": dataset_version,
+            }
         )
         if not document:
             break
@@ -89,7 +94,12 @@ if __name__ == "__main__":
 
         print(
             collection.count_documents(
-                {filed_name: {"$exists": False}, "publication_id": publication_id, "dataset_id": dataset_id, "dataset_version": dataset_version}
+                {
+                    filed_name: {"$exists": False},
+                    "publication_id": publication_id,
+                    "dataset_id": dataset_id,
+                    "dataset_version": dataset_version,
+                }
             )
         )
 
