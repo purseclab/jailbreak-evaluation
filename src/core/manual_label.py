@@ -37,8 +37,14 @@ def translate_text(text, project_id="quant-375120"):
 
 
 if __name__ == "__main__":
+    manual_name_list = ["hongyu"]
+    automatic_name_list = ["zou", "huang", "chao"]
+
     parser = argparse.ArgumentParser(description="Process some integers.")
-    parser.add_argument("--name", choices=["hongyu"], required=True)
+    parser.add_argument("--mode", choices=["manual", "automatic"], required=True)
+    parser.add_argument(
+        "--name", choices=manual_name_list + automatic_name_list, required=True
+    )
     parser.add_argument("--publication_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument("--dataset_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument("--dataset_version", choices=[0, 1], required=True, type=int)
@@ -47,25 +53,32 @@ if __name__ == "__main__":
         choices=[
             "safeguard_violation",
             "informativeness",
-            "truthfulness",
-            "intention_realization",
+            "relative_truthfulness",
         ],
         required=True,
     )
     args = parser.parse_args()
 
+    mode = args.mode
     name = args.name
     topic = args.topic
+    publication_id = args.publication_id
+    dataset_id = args.dataset_id
+    dataset_version = args.dataset_version
+
+    if mode == "manual":
+        assert name in manual_name_list
+    else:
+        assert name in automatic_name_list
+
+    assert mode == "manual"
 
     mongodb_client = connect_to_mongodb()
 
     db = mongodb_client["main_database"]
     collection = db["data_point_collection"]
 
-    filed_name = f"manual_{name}_{topic}_label"
-    publication_id = args.publication_id
-    dataset_id = args.dataset_id
-    dataset_version = args.dataset_version
+    filed_name = f"{mode}_{name}_{topic}_label"
 
     while True:
         os.system("clear")
