@@ -8,12 +8,13 @@ if __name__ == "__main__":
 
     # update all documents in collection, update the filed "publication_report_jailbreak_label" to bool instead of string
     # find all documents which do not have the filed "publication_report_jailbreak_label"
-    documents = collection.find({"dataset_version": {"$exists": False}})
+    documents = collection.find({"manual_hongyu_intention_realization_label": {"$exists": True}})
     
     for i, document in enumerate(documents):
-        # dataset_id = document["publication_id"]
+        manual_hongyu_intention_realization_label = document["manual_hongyu_intention_realization_label"]
         update_operation = {
-            "$set": {"dataset_version": 0}
+            "$set": {"manual_hongyu_relative_truthfulness_label": manual_hongyu_intention_realization_label},
+            "$unset": {"manual_hongyu_intention_realization_label": ""}
         }
         collection.update_one({"_id": document["_id"]}, update_operation)
         print(i)
