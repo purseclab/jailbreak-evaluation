@@ -3,6 +3,8 @@ import itertools
 import os
 import sys
 
+import numpy as np
+
 from utils import connect_to_mongodb
 
 
@@ -66,7 +68,7 @@ if __name__ == "__main__":
             case "zou":
                 evaluation = ZouEvaluation()
             case "huang":
-                evaluation = HuangEvaluation()
+                evaluation = HuangEvaluation("checkpoints/evaluator", "cuda")
             case "chao":
                 evaluation = ChaoEvaluation("gpt-4")
             case _:
@@ -126,7 +128,7 @@ if __name__ == "__main__":
 
         assert len(labels) == 1
         label = labels[0]
-        assert isinstance(label, bool)
+        assert isinstance(label, bool) or isinstance(label, np.bool_)
 
-        update_operation = {"$set": {filed_name: label}}
+        update_operation = {"$set": {filed_name: bool(label)}}
         collection.update_one({"_id": document["_id"]}, update_operation)
