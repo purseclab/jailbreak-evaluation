@@ -11,9 +11,9 @@ from pymongo.server_api import ServerApi
 
 @dataclass
 class DataPoint:
-    intention: str
-    question: str
-    answer: str
+    intent: str
+    prompt: str
+    response: str
 
     model_id: int
     publication_id: int
