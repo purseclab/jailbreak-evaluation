@@ -6,12 +6,13 @@ if __name__ == "__main__":
     db = mongodb_client["main_database"]
     collection = db["data_point_collection"]
 
-    # update all documents in collection, update the filed "publication_report_jailbreak_label" to bool instead of string
-    name = "hongyu"
-    topic = "safeguard_violation"
-
-    # documents = collection.find({"manual_{name}_{topic}_label": {"$exists": True}})
     # count ducuments
-    print(
-        collection.count_documents({f"manual_{name}_{topic}_label": {"$exists": False}})
-    )
+    print(collection.count_documents({"publication_id": 2, "model_id": 0, "dataset_id": 0}))
+    print(collection.count_documents({"publication_id": 2, "model_id": 0, "dataset_id": 2}))
+    print(collection.count_documents({"publication_id": 2, "model_id": 1, "dataset_id": 0}))
+
+    # count ducuments' dataset_id unique values
+    print(collection.distinct("dataset_version", {"publication_id": 2}))
+    print(collection.distinct("dataset_version", {"publication_id": 1}))
+    
+    
