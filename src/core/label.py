@@ -40,6 +40,7 @@ if __name__ == "__main__":
     parser.add_argument("--publication_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument("--dataset_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument("--dataset_version", choices=[0, 1], required=True, type=int)
+    parser.add_argument("--model_id", choices=[0], required=True, type=int)
     parser.add_argument(
         "--topic",
         choices=[
@@ -81,7 +82,7 @@ if __name__ == "__main__":
     db = mongodb_client["main_database"]
     collection = db["data_point_collection"]
 
-    filed_name = f"{mode}_{name}_{topic}_label"
+    field_name = f"{mode}_{name}_{topic}_label"
 
     for i in itertools.count():
         if mode == "manual":
@@ -89,7 +90,7 @@ if __name__ == "__main__":
 
         document = collection.find_one(
             {
-                filed_name: {"$exists": False},
+                field_name: {"$exists": False},
                 "publication_id": publication_id,
                 "dataset_id": dataset_id,
                 "dataset_version": dataset_version,
@@ -102,7 +103,7 @@ if __name__ == "__main__":
             print(
                 collection.count_documents(
                     {
-                        filed_name: {"$exists": False},
+                        field_name: {"$exists": False},
                         "publication_id": publication_id,
                         "dataset_id": dataset_id,
                         "dataset_version": dataset_version,
@@ -130,5 +131,5 @@ if __name__ == "__main__":
         label = labels[0]
         assert isinstance(label, bool) or isinstance(label, np.bool_)
 
-        update_operation = {"$set": {filed_name: bool(label)}}
+        update_operation = {"$set": {field_name: bool(label)}}
         collection.update_one({"_id": document["_id"]}, update_operation)
