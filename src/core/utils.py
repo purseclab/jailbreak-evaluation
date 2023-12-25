@@ -24,7 +24,7 @@ class DataPoint:
     publication_report_jailbreak_label_confidence: Optional[float] = None
 
     def __post_init__(self):
-        models = ["Llama-2-7b-chat-hf"]
+        models = ["Llama-2-7b-chat-hf", "gpt-3.5-turbo"]
         publications = [
             "Universal and Transferable Adversarial Attacks on Aligned Language Models",
             "Catastrophic Jailbreak of Open-source LLMs via Exploiting Generation",

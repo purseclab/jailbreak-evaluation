@@ -25,9 +25,9 @@ load_dotenv()
 def upload_princeton(input_csv, model_id, dataset_id, dataset_version):
     def create_data_point(row):
         return DataPoint(
-        intention=row['Input'],
-        question=row['Input'],
-        answer=row['Output'],
+        intent=row['Input'],
+        prompt=row['Input'],
+        response=row['Output'],
         model_id=model_id,
         publication_id=1,
         dataset_version=dataset_version,
@@ -48,9 +48,9 @@ def upload_princeton(input_csv, model_id, dataset_id, dataset_version):
 def upload_penn(input_csv, model_id, dataset_id, dataset_version):
     def create_data_point(row):
         return DataPoint(
-        intention=row['original_goal'],
-        question=row['prompt'],
-        answer=row['target_response'],
+        intent=row['original_goal'],
+        prompt=row['prompt'],
+        response=row['target_response'],
         model_id=model_id,
         publication_id=2,
         dataset_version=dataset_version,
