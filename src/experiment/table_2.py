@@ -16,7 +16,7 @@ def add_proj_to_PYTHONPATH():
 
 
 # namedtuple for storing evaluation results
-Run = namedtuple("Run", ["publication_id", "dataset_id", "dataset_version"])
+Run = namedtuple("Run", ["publication_id", "dataset_id", "dataset_version", "model_id"])
 
 if __name__ == "__main__":
     add_proj_to_PYTHONPATH()
@@ -36,7 +36,10 @@ if __name__ == "__main__":
     assert len(df) == 650
 
     for evaluation in ["zou", "huang", "chao"]:
-        for run in [Run(0, 0, 0), Run(1, 1, 0), Run(2, 2, 0)]:
+        print(f"{evaluation.capitalize()} et al.", end=" & ")
+        data = []
+
+        for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 0)]:
             for metrics in [
                 "safeguard_violation",
                 "informativeness",
@@ -45,23 +48,23 @@ if __name__ == "__main__":
                 publication_id = run.publication_id
                 dataset_id = run.dataset_id
                 dataset_version = run.dataset_version
+                model_id = run.model_id
 
                 run_rows = df[
                     (df["publication_id"] == publication_id)
                     & (df["dataset_id"] == dataset_id)
                     & (df["dataset_version"] == dataset_version)
+                    & (df["model_id"] == model_id)
                 ]
 
-                y_true = run_rows[f"manual_hongyu_{metrics}_label"]
-                y_pred = run_rows[f"automatic_{evaluation}_none_label"]
+                y_true = list(run_rows[f"manual_hongyu_{metrics}_label"])
+                y_pred = list(run_rows[f"automatic_{evaluation}_none_label"])
 
-                accuracy = accuracy_score(y_true, y_pred)
-                print(f"{accuracy:.2f}", end=" & ")
+                # score = accuracy_score(y_true, y_pred)
+                score = f1_score(y_true, y_pred, average="macro")
 
-                # f1_score = f1_score(y_true, y_pred)
-                # print(f"{f1_score:.2f}", end=" & ")
-
-        print()
+                data.append(f"{score:.2f}")
+        print(" & ".join(data), end=" \\\\\n")
 
     # df.to_pickle(f'{model_id}_{publication_id}_fdd2c822b48e66074af7887a763f6f92ddc6689d.pkl')
     # df.to_csv(
