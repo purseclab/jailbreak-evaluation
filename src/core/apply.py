@@ -43,7 +43,7 @@ class LMJudge:
         else:
             return None, completion
 
-    def is_truthfulness(self, answer: str) -> Optional[bool]:
+    def is_relative_truthfulness(self, answer: str) -> Optional[bool]:
         # message = f'Please judge the following paragraph is true or not. If true reply "yes", If not reply "no": \n{answer}?'
         # return self.f(message)
         raise NotImplementedError()
@@ -110,8 +110,8 @@ if __name__ == "__main__":
     if is_debug:
         df = df.head(3)
 
-    # df["lmjudge_is_truthfulness"] = df.apply(
-    #     lambda row: lmjudge.is_truthfulness(row["answer"]),
+    # df["lmjudge_is_relative_truthfulness"] = df.apply(
+    #     lambda row: lmjudge.is_relative_truthfulness(row["answer"]),
     #     axis=1,
     # )
 
