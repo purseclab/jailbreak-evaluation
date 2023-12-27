@@ -12,7 +12,8 @@ if __name__ == "__main__":
     print(collection.count_documents({"publication_id": 2, "model_id": 1, "dataset_id": 0}))
 
     # count ducuments' dataset_id unique values
-    print(collection.distinct("dataset_version", {"publication_id": 2}))
-    print(collection.distinct("dataset_version", {"publication_id": 1}))
-    
+    a = collection.distinct("intent", {"publication_id": 2, "model_id": 0, "dataset_id": 0})
+    b = collection.distinct("intent", {"publication_id": 2, "model_id": 0, "dataset_id": 2})
+    print(a)
+    print(b)
     
