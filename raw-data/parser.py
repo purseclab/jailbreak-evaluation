@@ -9,6 +9,9 @@ def aggregate_penn(input_file_directory, output_filename):
     output_df = pd.DataFrame()
     
     for filename in os.listdir(input_file_directory):
+        if (filename.endswith("_evaluation_time.csv")):
+            continue
+        
         print(filename)
         df = pd.read_csv(os.path.join(input_file_directory, filename))
 
@@ -27,7 +30,7 @@ def aggregate_penn(input_file_directory, output_filename):
             output_df = output_df._append(max_score_rows.iloc[-1])
 
     output_df = output_df.drop(output_df.columns[0], axis=1)
-    print(output_df)
+    print(len(output_df))
     output_df.to_csv(output_filename, index=False)
 
 def aggregate_princeton(input_text_file, input_score_file, input_prompt_file, output_filename):
