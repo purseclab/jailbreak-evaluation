@@ -28,12 +28,13 @@ if __name__ == "__main__":
     db = mongodb_client["main_database"]
     collection = db["data_point_collection"]
 
-    # pull all documents in collection
-    documents = collection.find()
-
-    # convert documents to pandas dataframe
-    df = pd.DataFrame(documents)
-    assert len(df) == 650
+    is_load_from_database = True
+    if is_load_from_database:
+        documents = collection.find()
+        df = pd.DataFrame(documents)
+        assert len(df) == 650
+    else:
+        df = pd.read_pickle("data_point_collection.pkl")
 
     for evaluation in ["zou", "huang", "chao"]:
         print(f"{evaluation.capitalize()} et al.", end=" & ")
@@ -60,10 +61,10 @@ if __name__ == "__main__":
                 y_true = list(run_rows[f"manual_hongyu_{metrics}_label"])
                 y_pred = list(run_rows[f"automatic_{evaluation}_none_label"])
 
-                # score = accuracy_score(y_true, y_pred)
-                score = f1_score(y_true, y_pred, average="macro")
+                accuracy = accuracy_score(y_true, y_pred)
+                f1 = f1_score(y_true, y_pred, average="macro")
 
-                data.append(f"{score:.2f}")
+                data.append(f"{accuracy:.2f} / {f1:.2f}")
         print(" & ".join(data), end=" \\\\\n")
 
     # df.to_pickle(f'{model_id}_{publication_id}_fdd2c822b48e66074af7887a763f6f92ddc6689d.pkl')
