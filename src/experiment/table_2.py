@@ -32,7 +32,7 @@ if __name__ == "__main__":
     if is_load_from_database:
         documents = collection.find()
         df = pd.DataFrame(documents)
-        assert len(df) == 650
+        assert len(df) == 700
     else:
         df = pd.read_pickle("data_point_collection.pkl")
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         print(f"{evaluation.capitalize()} et al.", end=" & ")
         data = []
 
-        for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 0)]:
+        for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 1)]:
             for metrics in [
                 "safeguard_violation",
                 "informativeness",
