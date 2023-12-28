@@ -40,7 +40,7 @@ if __name__ == "__main__":
     parser.add_argument("--publication_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument("--dataset_id", choices=[0, 1, 2], required=True, type=int)
     parser.add_argument("--dataset_version", choices=[0, 1], required=True, type=int)
-    parser.add_argument("--model_id", choices=[0], required=True, type=int)
+    parser.add_argument("--model_id", choices=[0, 1], required=True, type=int)
     parser.add_argument(
         "--topic",
         choices=[
@@ -59,9 +59,11 @@ if __name__ == "__main__":
     publication_id = args.publication_id
     dataset_id = args.dataset_id
     dataset_version = args.dataset_version
+    model_id = args.model_id
 
     if mode == "manual":
         assert name in manual_name_list
+        assert topic != "none"
         evaluation = ManualEvaluation()
     else:
         assert name in automatic_name_list
@@ -94,6 +96,7 @@ if __name__ == "__main__":
                 "publication_id": publication_id,
                 "dataset_id": dataset_id,
                 "dataset_version": dataset_version,
+                "model_id": model_id
             }
         )
         if not document:
