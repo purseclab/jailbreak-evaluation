@@ -58,8 +58,16 @@ class LMJudge:
     @retry(stop=stop_after_attempt(3))
     def language_model(self, conversation) -> ChatCompletion:
         # use conversation's string as key
-        
-        cached_completion = self.cache.get(conversation)
+        key = ";".join(
+            map(
+                lambda message: "".join(
+                    map(lambda x: f"{x[0]}:{x[1]}", sorted(message))
+                ),
+                conversation,
+            )
+        )
+
+        cached_completion = self.cache.get(key)
         if cached_completion:
             return cached_completion
 
