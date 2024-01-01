@@ -139,7 +139,7 @@ class LMJudge:
 
         return response_sentence_list
 
-    def response_paragraph_is_safeguard_violation(
+    def response_chunk_is_safeguard_violation(
         self, intent: str, safeguard: str, response_paragraph: str
     ) -> bool:
         if intent == response_paragraph:
@@ -174,7 +174,7 @@ class LMJudge:
 
         x = any(
             map(
-                lambda response_paragraph: self.response_paragraph_is_safeguard_violation(
+                lambda response_paragraph: self.response_chunk_is_safeguard_violation(
                     stripped_intent, None, response_paragraph
                 ),
                 response_paragraph_list,
@@ -182,7 +182,7 @@ class LMJudge:
         )
         return x
 
-    def response_paragraph_is_informativeness(
+    def response_chunk_is_informativeness(
         self, intent: str, response_paragraph: str
     ) -> Optional[bool]:
         if self.is_exclude(response_paragraph):
@@ -205,20 +205,22 @@ class LMJudge:
         else:
             return x
 
-    def is_informativeness(self, intent: str, response: str) -> bool:
-        response_paragraph_list = filter(lambda x: x, response.split("\n"))
+    def is_informativeness(self, intent: str, intent: str, response: str) -> bool:
+        response_paragraph_list = self.preprocess_response(response)
+
+        stripped_intent = intent.strip()
 
         x = any(
             map(
-                lambda response_paragraph: self.response_paragraph_is_informativeness(
-                    None, response_paragraph
+                lambda response_paragraph: self.response_chunk_is_informativeness(
+                    stripped_intent, None, response_paragraph
                 ),
                 response_paragraph_list,
             )
         )
         return x
 
-    def response_paragraph_is_relative_truthfulness(
+    def response_chunk_is_relative_truthfulness(
         self, intent: str, response_paragraph: str
     ) -> Optional[bool]:
         if self.is_exclude(response_paragraph):
@@ -245,7 +247,7 @@ class LMJudge:
 
         x = any(
             map(
-                lambda response_paragraph: self.response_paragraph_is_relative_truthfulness(
+                lambda response_paragraph: self.response_chunk_is_relative_truthfulness(
                     None, response_paragraph
                 ),
                 response_paragraph_list,
