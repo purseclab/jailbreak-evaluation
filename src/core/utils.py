@@ -97,10 +97,16 @@ def get_random_data_point_from_mongodb(mongodb_client: MongoClient) -> DataPoint
     ).next()
 
     data_point_fields = {k: v for k, v in document.items() if k in DataPoint.__dataclass_fields__}
-
-    print(data_point_fields)
     
     return DataPoint(**data_point_fields)
+
+def retrieve_all_labeled_documents(mongodb_client: MongoClient):
+    db = mongodb_client["main_database"]
+    data_point_collection = db["data_point_collection"]
+
+    documents = data_point_collection.find({"manual_hongyu_safeguard_violation_label" : {"$exists": True}, "manual_hongyu_informativeness_label": {"$exists": True}, "manual_hongyu_relative_truthfulness_label": {"$exists": True}})
+
+    return [document for document in documents]
     
 
 
