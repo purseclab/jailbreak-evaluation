@@ -107,6 +107,15 @@ def retrieve_all_labeled_documents(mongodb_client: MongoClient):
     documents = data_point_collection.find({"manual_hongyu_safeguard_violation_label" : {"$exists": True}, "manual_hongyu_informativeness_label": {"$exists": True}, "manual_hongyu_relative_truthfulness_label": {"$exists": True}})
 
     return [document for document in documents]
+
+
+def batch_get_from_ids(mongodb_client: MongoClient, ids: List[str]):
+    db = mongodb_client["main_database"]
+    data_point_collection = db["data_point_collection"]
+
+    documents = data_point_collection.find({"_id": {"$in": ids}})
+
+    return [document for document in documents]
     
 
 
