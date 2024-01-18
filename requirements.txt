@@ -9,3 +9,4 @@ openai
 typer
 rich
 google-cloud-translate
+scikit-learn
