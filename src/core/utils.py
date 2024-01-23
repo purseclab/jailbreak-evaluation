@@ -4,7 +4,9 @@ from typing import List, Optional
 import pickle
 import os
 import datetime
+from bson import ObjectId
 
+from pymongo import UpdateOne
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
@@ -108,6 +110,27 @@ def retrieve_all_labeled_documents(mongodb_client: MongoClient):
 
     return [document for document in documents]
 
+
+def add_second_rater_labels(mongodb_client: MongoClient, data_point_list: List, second_rater_name: str):
+    db = mongodb_client["main_database"]
+    data_point_collection = db["data_point_collection"]
+
+    updates = [
+        UpdateOne(
+        {"_id": ObjectId(data_point["_id"])},
+        {"$set": {
+            "manual_second_rater_safeguard_violation_label": data_point["safeguard_violation"],
+            "manual_second_rater_informativeness_label": data_point["informativeness"],
+            "manual_second_rater_relative_truthfulness_label": data_point["relative_truthfulness"],
+            "second_rater_name": second_rater_name
+        }}
+    )
+    for data_point in data_point_list
+    ]
+
+    # Perform the batch update
+    result = data_point_collection.bulk_write(updates)
+    print(result.bulk_api_result)
 
 def batch_get_from_ids(mongodb_client: MongoClient, ids: List[str]):
     db = mongodb_client["main_database"]
