@@ -1,7 +1,13 @@
 # proj-jailbreak-evaluation
 ## Install Dependency
 ```
-python -m pip install pymongo
+pip install -r requirements.txt
+```
+
+```
+fschat==0.2.23
+transformers==4.32.1
+torch==2.0.1
 ```
 ## How to Use
 1. Construct data point list with DataPoint class in `src/utils.py`
