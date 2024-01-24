@@ -290,9 +290,6 @@ if __name__ == "__main__":
         "Run", ["publication_id", "dataset_id", "dataset_version", "model_id"]
     )
 
-    print("is_safeguard_violation")
-    exit()
-
     dfs = []
     for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 1)]:
         publication_id = run.publication_id
