@@ -8,5 +8,7 @@
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,
         "**/venv/*/**": true
-    }
+    },
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "basic"
 }
