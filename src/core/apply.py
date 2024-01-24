@@ -1,26 +1,24 @@
-from collections import namedtuple
-import os
-import re
-from typing import List, Optional
 import itertools
+import os
 import pickle
+import re
+from collections import namedtuple
+from typing import List, Optional
 
+import pandas as pd
 from bson import ObjectId
+from dotenv import load_dotenv
 from fastchat.model import get_conversation_template
+from nltk.tokenize import sent_tokenize
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
-import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score
-from tqdm import tqdm
 from tenacity import retry, stop_after_attempt
-
-import nltk
-from nltk.tokenize import sent_tokenize
-
+from tqdm import tqdm
 from utils import connect_to_mongodb
 
 tqdm.pandas()
-
+load_dotenv()
 
 class Cache:
     def __init__(self, model_version) -> None:
@@ -291,6 +289,9 @@ if __name__ == "__main__":
     Run = namedtuple(
         "Run", ["publication_id", "dataset_id", "dataset_version", "model_id"]
     )
+
+    print("is_safeguard_violation")
+    exit()
 
     dfs = []
     for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 1)]:
