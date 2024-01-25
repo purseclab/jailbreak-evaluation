@@ -4,16 +4,20 @@ import os
 import pickle
 import re
 from collections import namedtuple
+from pathlib import Path
 from typing import List, Optional, Tuple
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import seaborn as sns
 from bson import ObjectId
 from dotenv import load_dotenv
 from fastchat.model import get_conversation_template
 from nltk.tokenize import sent_tokenize
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from tenacity import retry, stop_after_attempt
 from tqdm import tqdm
 from utils import connect_to_mongodb
@@ -21,7 +25,8 @@ from utils import connect_to_mongodb
 tqdm.pandas()
 load_dotenv()
 
-logging.basicConfig(filename='raw_output.log', encoding='utf-8', level=logging.WARNING)
+logging.basicConfig(filename="raw_output.log", encoding="utf-8", level=logging.WARNING)
+
 
 class Cache:
     def __init__(self, model_version) -> None:
@@ -425,10 +430,35 @@ Your rating should strictly follow this format: "Safeguard Violation: rating;Rel
             sentence_level_result.safeguard_violation,
             sentence_level_result.informativeness,
             sentence_level_result.relative_truthfulness,
-            document_level_result.safeguard_violation or paragraph_level_result.safeguard_violation or sentence_level_result.safeguard_violation,
-            document_level_result.informativeness or paragraph_level_result.informativeness or sentence_level_result.informativeness,
-            document_level_result.relative_truthfulness or paragraph_level_result.relative_truthfulness or sentence_level_result.relative_truthfulness,
+            document_level_result.safeguard_violation
+            or paragraph_level_result.safeguard_violation
+            or sentence_level_result.safeguard_violation,
+            document_level_result.informativeness
+            or paragraph_level_result.informativeness
+            or sentence_level_result.informativeness,
+            document_level_result.relative_truthfulness
+            or paragraph_level_result.relative_truthfulness
+            or sentence_level_result.relative_truthfulness,
         )
+
+
+def save_heatmap(cm, filename: str, title: str = None):
+    plt.clf()
+    sns.set(rc={"figure.figsize": (5, 5)})
+    sns.set(font_scale=3.5)
+
+    h = sns.heatmap(
+        cm, annot=True, annot_kws={"fontsize": 50}, fmt="d", cmap="Blues", cbar=False
+    )
+    h.set_xticklabels([True, False])
+    h.set_yticklabels([True, False])
+
+    plt.xlabel("Predicted")
+    plt.ylabel("Human Label")
+    if title:
+        plt.title(title)
+
+    plt.savefig(Path("figure", "gpt-4", filename), format="png", bbox_inches="tight")
 
 
 if __name__ == "__main__":
@@ -503,7 +533,6 @@ if __name__ == "__main__":
         df.to_csv(f"{lmjudge.path_compatible_model_version}_automatic_ours.csv")
         df.to_pickle(f"{lmjudge.path_compatible_model_version}_automatic_ours.pkl")
 
-
     for level in ["document", "paragraph", "sentence", "joint"]:
         print(f"{level}", end=" & ")
         data = []
@@ -532,4 +561,17 @@ if __name__ == "__main__":
                 f1 = f1_score(y_true, y_pred, average="macro")
 
                 data.append(f"{accuracy:.2f} / {f1:.2f}")
+
+                cm = confusion_matrix(
+                    y_true,
+                    y_pred,
+                )
+
+                publication_title_list = ["GCG", "GE", "PAIR"]
+                save_heatmap(
+                    cm,
+                    f"{level}-{publication_title_list[run.publication_id]}-{metrics}.png",
+                    title=f"{level}-{publication_title_list[run.publication_id]}-{metrics}",
+                )
+
         print(" & ".join(data), end=" \\\\\n")
