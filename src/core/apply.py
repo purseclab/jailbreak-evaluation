@@ -17,7 +17,8 @@ from fastchat.model import get_conversation_template
 from nltk.tokenize import sent_tokenize
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
+from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
+                             precision_score, recall_score)
 from tenacity import retry, stop_after_attempt
 from tqdm import tqdm
 from utils import connect_to_mongodb
@@ -71,8 +72,8 @@ class LMJudge:
         # self.model_version = "meta-llama/Llama-2-70b-chat-hf"  # "gpt-4"
 
         self.openai_client = OpenAI()
-        self.model_version = "gpt-3.5-turbo"  # "gpt-4"
-        # self.model_version = "gpt-4"  # "gpt-4"
+        # self.model_version = "gpt-3.5-turbo"  # "gpt-4"
+        self.model_version = "gpt-4"  # "gpt-4"
 
         self.path_compatible_model_version = self.model_version.replace("/", "-")
 
@@ -93,6 +94,9 @@ class LMJudge:
         cached_completion = self.cache.get(key)
         if cached_completion:
             return cached_completion
+        else:
+            print(f"cache miss: {key}")
+            exit()
 
         # print("start")
         try:
@@ -511,18 +515,18 @@ if __name__ == "__main__":
     try:
         df[
             [
-                "document_level_safeguard_violation",
-                "document_level_informativeness",
-                "document_level_relative_truthfulness",
-                "paragraph_level_safeguard_violation",
-                "paragraph_level_informativeness",
-                "paragraph_level_relative_truthfulness",
-                "sentence_level_safeguard_violation",
-                "sentence_level_informativeness",
-                "sentence_level_relative_truthfulness",
-                "joint_level_safeguard_violation",
-                "joint_level_informativeness",
-                "joint_level_relative_truthfulness",
+                "automatic_chao_safeguard_violation_label",
+                "automatic_chao_informativeness_label",
+                "automatic_chao_relative_truthfulness_label",
+                "automatic_paragraph_safeguard_violation_label",
+                "automatic_paragraph_informativeness_label",
+                "automatic_paragraph_relative_truthfulness_label",
+                "automatic_sentence_safeguard_violation_label",
+                "automatic_sentence_informativeness_label",
+                "automatic_sentence_relative_truthfulness_label",
+                "automatic_joint_safeguard_violation_label",
+                "automatic_joint_informativeness_label",
+                "automatic_joint_relative_truthfulness_label",
             ]
         ] = df.progress_apply(
             lambda row: lmjudge.multifaceted(row["intent"], row["response"]),
@@ -530,14 +534,19 @@ if __name__ == "__main__":
             result_type="expand",
         )
     finally:
-        lmjudge.cache.save()
+        # lmjudge.cache.save()
+        pass
 
     if document_id is None:
         df.to_csv(f"{lmjudge.path_compatible_model_version}_automatic_ours.csv")
         df.to_pickle(f"{lmjudge.path_compatible_model_version}_automatic_ours.pkl")
 
-    for level in ["document", "paragraph", "sentence", "joint"]:
-        print(f"{level}", end=" & ")
+    for evaluation in ["zou", "huang", "chao", "paragraph", "sentence", "joint"]:
+        if evaluation == "zou" or evaluation == "huang" or evaluation == "chao":
+            title = f"{evaluation.capitalize()} et al."
+        else:
+            title = f"{evaluation.capitalize()}-Level"
+        print(title, end=" & ")
         data = []
         for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 1)]:
             for metrics in [
@@ -557,24 +566,51 @@ if __name__ == "__main__":
                     & (df["model_id"] == model_id)
                 ]
 
+                if evaluation == "zou" or evaluation == "huang":
+                    metrics_keyword = "none"
+                else:
+                    metrics_keyword = metrics
+
                 y_true = list(run_rows[f"manual_hongyu_{metrics}_label"])
-                y_pred = list(run_rows[f"{level}_level_{metrics}"])
+                y_pred = list(run_rows[f"automatic_{evaluation}_{metrics_keyword}_label"])
 
                 accuracy = accuracy_score(y_true, y_pred)
-                f1 = f1_score(y_true, y_pred, average="macro")
+                f1 = f1_score(y_true, y_pred)
+                precision = precision_score(y_true, y_pred)
+                recall = recall_score(y_true, y_pred)
+                
+                if f1 == 1.0:
+                    f1_string = f"1.0"
+                else:
+                    f1_string = f"{f1:.2f}".lstrip('0')
 
-                data.append(f"{accuracy:.2f} / {f1:.2f}")
+                if accuracy == 1.0:
+                    accuracy_string = f"1.0"
+                else:
+                    accuracy_string = f"{accuracy:.2f}".lstrip('0')
 
-                cm = confusion_matrix(
-                    y_true,
-                    y_pred,
-                )
+                if precision == 1.0:
+                    precision_string = f"1.0"
+                else:
+                    precision_string = f"{precision:.2f}".lstrip('0')
 
-                publication_title_list = ["GCG", "GE", "PAIR"]
-                save_heatmap(
-                    cm,
-                    f"{level}-{publication_title_list[run.publication_id]}-{metrics}.png",
-                    title=f"{level}-{publication_title_list[run.publication_id]}-{metrics}",
-                )
+                if recall == 1.0:
+                    recall_string = f"1.0"
+                else:
+                    recall_string = f"{recall:.2f}".lstrip('0')
+
+                data.append(f"{f1_string}/{accuracy_string}/{precision_string}/{recall_string}")
+
+                # cm = confusion_matrix(
+                #     y_true,
+                #     y_pred,
+                # )
+
+                # publication_title_list = ["GCG", "GE", "PAIR"]
+                # save_heatmap(
+                #     cm,
+                #     f"{level}-{publication_title_list[run.publication_id]}-{metrics}.png",
+                #     title=f"{level}-{publication_title_list[run.publication_id]}-{metrics}",
+                # )
 
         print(" & ".join(data), end=" \\\\\n")

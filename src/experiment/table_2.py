@@ -62,7 +62,7 @@ if __name__ == "__main__":
                 y_pred = list(run_rows[f"automatic_{evaluation}_none_label"])
 
                 accuracy = accuracy_score(y_true, y_pred)
-                f1 = f1_score(y_true, y_pred, average="macro")
+                f1 = f1_score(y_true, y_pred)
 
                 data.append(f"{accuracy:.2f} / {f1:.2f}")
         print(" & ".join(data), end=" \\\\\n")
