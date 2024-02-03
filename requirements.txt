@@ -7,3 +7,7 @@ typer
 rich
 google-cloud-translate
 scikit-learn
+seaborn
+nltk
+tenacity
+pyarrow
