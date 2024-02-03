@@ -552,7 +552,18 @@ if __name__ == "__main__":
         elif evaluation == "chao":
             title = r"\texttt{NLG}~\cite{chao_jailbreaking_2023}"
         else:
-            title = f"Multifaceted-{evaluation.capitalize()[0]}L"
+            name = f"Multifaceted-{evaluation.capitalize()[0]}L"
+            if evaluation == "document":
+                symbol = ""
+            elif evaluation == "paragraph":
+                symbol = "$^*$"
+            elif evaluation == "sentence":
+                symbol = r"$^\dagger$"
+            elif evaluation == "joint":
+                symbol = r"$^\ddagger$"
+            else:
+                raise ValueError(f"Unknown evaluation: {evaluation}")
+            title = f"{name}{symbol}"
         print(title, end=" & ")
         data = []
         for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 1)]:
