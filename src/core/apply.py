@@ -728,8 +728,8 @@ if __name__ == "__main__":
                 # publication_title_list = ["GCG", "GE", "PAIR"]
                 # save_heatmap(
                 #     cm,
-                #     f"{level}-{publication_title_list[run.publication_id]}-{original_metrics}.png",
-                #     title=f"{level}-{publication_title_list[run.publication_id]}-{original_metrics}",
+                #     f"{evaluation}-{publication_title_list[run.publication_id]}-{original_metrics}.png",
+                #     title=f"{evaluation}-{publication_title_list[run.publication_id]}-{original_metrics}",
                 # )
 
         print(" & ".join(data), end=" \\\\\n")
