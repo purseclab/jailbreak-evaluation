@@ -381,7 +381,11 @@ class LMJudge:
         paragraph_level_result_relative_truthfulness = False
         for paragraph in response_preprocess_result.paragraph_list:
             current_paragraph_level_result = self.response_chunk_multifaceted(
-                stripped_intent, paragraph
+                stripped_intent,
+                paragraph,
+                paragraph_level_result_safeguard_violation,
+                paragraph_level_result_informativeness,
+                paragraph_level_result_relative_truthfulness,
             )
             paragraph_level_result_safeguard_violation = (
                 paragraph_level_result_safeguard_violation
@@ -412,7 +416,11 @@ class LMJudge:
         sentence_level_result_relative_truthfulness = False
         for sentence in response_preprocess_result.sentence_list:
             current_sentence_level_result = self.response_chunk_multifaceted(
-                stripped_intent, sentence
+                stripped_intent,
+                sentence,
+                sentence_level_result_safeguard_violation,
+                sentence_level_result_informativeness,
+                sentence_level_result_relative_truthfulness,
             )
             sentence_level_result_safeguard_violation = (
                 sentence_level_result_safeguard_violation
