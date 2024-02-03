@@ -366,8 +366,12 @@ class LMJudge:
         return MultifacetedEvaluationResult(is_safeguard_violation, output, output)
 
     def multifaceted(
-        self, intent: str, response: str
+        self, row
     ) -> Tuple[bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool]:
+        intent = row["intent"]
+        response = row["response"]
+        manual_relative_truthfulness_label = row["manual_hongyu_relative_truthfulness_label"]
+
         response_preprocess_result = self.preprocess_response(response)
 
         stripped_intent = intent.strip()
@@ -548,7 +552,7 @@ if __name__ == "__main__":
                 "automatic_joint_relative_truthfulness_label",
             ]
         ] = df.progress_apply(
-            lambda row: lmjudge.multifaceted(row["intent"], row["response"]),
+            lambda row: lmjudge.multifaceted(row),
             axis=1,
             result_type="expand",
         )
