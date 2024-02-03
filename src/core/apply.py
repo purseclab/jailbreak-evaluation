@@ -337,10 +337,12 @@ class LMJudge:
         return output
 
     def response_chunk_multifaceted(
-        self, intent: str, response_chunk: str,
+        self,
+        intent: str,
+        response_chunk: str,
         skip_safeguard_violation: bool,
         skip_informativeness: bool,
-        skip_relative_truthfulness: bool
+        skip_relative_truthfulness: bool,
     ) -> MultifacetedEvaluationResult:
         if intent == response_chunk or len(response_chunk) == 0:
             return MultifacetedEvaluationResult(False, False, False)
@@ -550,7 +552,15 @@ if __name__ == "__main__":
         df.to_csv(f"{lmjudge.path_compatible_model_version}_automatic_ours.csv")
         df.to_pickle(f"{lmjudge.path_compatible_model_version}_automatic_ours.pkl")
 
-    for evaluation in ["zou", "huang", "chao", "document", "paragraph", "sentence", "joint"]:
+    for evaluation in [
+        "zou",
+        "huang",
+        "chao",
+        "document",
+        "paragraph",
+        "sentence",
+        "joint",
+    ]:
         if evaluation == "zou":
             title = r"\texttt{SM}~\cite{zou_universal_2023}"
         elif evaluation == "huang":
@@ -618,7 +628,11 @@ if __name__ == "__main__":
                         & run_rows["manual_hongyu_relative_truthfulness_label"]
                     )
 
-                    if evaluation == "zou" or evaluation == "huang" or evaluation == "chao":
+                    if (
+                        evaluation == "zou"
+                        or evaluation == "huang"
+                        or evaluation == "chao"
+                    ):
                         y_pred = list(run_rows[f"automatic_{evaluation}_none_label"])
                     else:
                         y_pred = list(
@@ -632,28 +646,44 @@ if __name__ == "__main__":
                         )
                 elif metrics == "000":
                     y_true = list(
-                        ~run_rows["manual_hongyu_safeguard_violation_label"].astype('bool')
-                        & ~run_rows["manual_hongyu_informativeness_label"].astype('bool')
-                        & ~run_rows["manual_hongyu_relative_truthfulness_label"].astype('bool')
+                        ~run_rows["manual_hongyu_safeguard_violation_label"].astype(
+                            "bool"
+                        )
+                        & ~run_rows["manual_hongyu_informativeness_label"].astype(
+                            "bool"
+                        )
+                        & ~run_rows["manual_hongyu_relative_truthfulness_label"].astype(
+                            "bool"
+                        )
                     )
 
-                    if evaluation == "zou" or evaluation == "huang" or evaluation == "chao":
-                        y_pred = list(~run_rows[f"automatic_{evaluation}_none_label"].astype('bool'))
+                    if (
+                        evaluation == "zou"
+                        or evaluation == "huang"
+                        or evaluation == "chao"
+                    ):
+                        y_pred = list(
+                            ~run_rows[f"automatic_{evaluation}_none_label"].astype(
+                                "bool"
+                            )
+                        )
                     else:
                         y_pred = list(
                             ~run_rows[
                                 f"automatic_{evaluation}_safeguard_violation_label"
-                            ].astype('bool')
-                            & ~run_rows[f"automatic_{evaluation}_informativeness_label"].astype('bool')
+                            ].astype("bool")
+                            & ~run_rows[
+                                f"automatic_{evaluation}_informativeness_label"
+                            ].astype("bool")
                             & ~run_rows[
                                 f"automatic_{evaluation}_relative_truthfulness_label"
-                            ].astype('bool')
+                            ].astype("bool")
                         )
                 else:
                     raise ValueError(f"Unknown metrics: {metrics}")
 
                 accuracy = accuracy_score(y_true, y_pred)
-                
+
                 f1 = f1_score(y_true, y_pred)
                 precision = precision_score(y_true, y_pred)
                 recall = recall_score(y_true, y_pred)
