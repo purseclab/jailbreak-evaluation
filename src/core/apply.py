@@ -615,22 +615,22 @@ if __name__ == "__main__":
                         )
                 elif metrics == "000":
                     y_true = list(
-                        ~run_rows["manual_hongyu_safeguard_violation_label"]
-                        & ~run_rows["manual_hongyu_informativeness_label"]
-                        & ~run_rows["manual_hongyu_relative_truthfulness_label"]
+                        ~run_rows["manual_hongyu_safeguard_violation_label"].astype('bool')
+                        & ~run_rows["manual_hongyu_informativeness_label"].astype('bool')
+                        & ~run_rows["manual_hongyu_relative_truthfulness_label"].astype('bool')
                     )
 
                     if evaluation == "zou" or evaluation == "huang" or evaluation == "chao":
-                        y_pred = list(~run_rows[f"automatic_{evaluation}_none_label"])
+                        y_pred = list(~run_rows[f"automatic_{evaluation}_none_label"].astype('bool'))
                     else:
                         y_pred = list(
                             ~run_rows[
                                 f"automatic_{evaluation}_safeguard_violation_label"
-                            ]
-                            & ~run_rows[f"automatic_{evaluation}_informativeness_label"]
+                            ].astype('bool')
+                            & ~run_rows[f"automatic_{evaluation}_informativeness_label"].astype('bool')
                             & ~run_rows[
                                 f"automatic_{evaluation}_relative_truthfulness_label"
-                            ]
+                            ].astype('bool')
                         )
                 else:
                     raise ValueError(f"Unknown metrics: {metrics}")
