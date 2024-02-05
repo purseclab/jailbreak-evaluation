@@ -35,6 +35,8 @@ class ChaoGPT:
     def __init__(self, model_name) -> None:
         self.model_name = model_name
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.cache = Cache(self.model_name)
+
 
     def generate(
         self, conv: List[Dict], max_n_tokens: int, temperature: float, top_p: float
@@ -51,13 +53,39 @@ class ChaoGPT:
         output = self.API_ERROR_OUTPUT
         for _ in range(self.API_MAX_RETRY):
             try:
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=conv,
-                    max_tokens=max_n_tokens,
-                    temperature=temperature,
-                    top_p=top_p,
+                # use conversation's string as key
+                key = ";".join(
+                    map(
+                        lambda message: "".join(
+                            map(lambda x: f"{x}:{message[x]}", sorted(message))
+                        ),
+                        conv,
+                    )
                 )
+
+                cached_completion = self.cache.get(key)
+                if cached_completion:
+                    response = cached_completion
+                else:
+                    pass
+                    # print(f"cache miss: {key}")
+                    # raise Exception(f"cache miss: {key}")
+
+                    # print("start")
+                    try:
+                        response = self.client.chat.completions.create(
+                            model=self.model_name,
+                            messages=conv,
+                            max_tokens=max_n_tokens,
+                            temperature=temperature,
+                            top_p=top_p,
+                        )
+                    except Exception as e:
+                        print(conv)
+                        raise e
+                    # print("end")
+
+                self.cache.set(key, response)
                 output = response.choices[0].message.content
                 break
             except openai.OpenAIError as e:
