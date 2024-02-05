@@ -27,6 +27,7 @@ from sklearn.metrics import (
 )
 from tenacity import retry, stop_after_attempt
 from tqdm import tqdm
+from hypnotist.language_models import Cache
 from utils import connect_to_mongodb
 
 tqdm.pandas()
