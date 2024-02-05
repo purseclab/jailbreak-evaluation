@@ -13,10 +13,9 @@ def f_on_row(row):
 
     response = row["response"]
 
-    sentences = sent_tokenize(response)
-    for sentence in sentences:
-        if stripped_intent == sentence.strip():
-            return True
+    if stripped_intent in response:
+        return True
+
     return False
 
 
