@@ -27,7 +27,13 @@ from sklearn.metrics import (
 )
 from tenacity import retry, stop_after_attempt
 from tqdm import tqdm
-from hypnotist.language_models import Cache
+
+import sys
+def add_proj_to_PYTHONPATH():
+    proj_path = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    sys.path.append(proj_path)
+add_proj_to_PYTHONPATH()
+from src.hypnotist.language_models import Cache
 from utils import connect_to_mongodb
 
 tqdm.pandas()
@@ -213,7 +219,7 @@ Your rating should strictly follow this format: "intent order: rating", the rati
     def parse_response_chunk_multifaceted_output(self, raw_output):
         match = re.findall(r"\d+", raw_output)
         if len(match) != 2:
-            print(f"len(match) != 2: {raw_output}")
+            # print(f"len(match) != 2: {raw_output}")
             return [False, False]
 
         output = [x == "1" for x in match]
@@ -371,6 +377,14 @@ Your rating should strictly follow this format: "intent order: rating", the rati
             paragraph_level_result.informativeness,
             paragraph_level_result.relative_truthfulness,
         )
+
+        if (
+            manual_relative_truthfulness_label
+            and combination_level_result.safeguard_violation
+            and combination_level_result.relative_truthfulness
+            and not row["automatic_chao_none_label"]
+        ):
+            print(row["_id"])
 
         return (
             document_level_result.safeguard_violation,
