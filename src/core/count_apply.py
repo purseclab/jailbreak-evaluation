@@ -18,28 +18,18 @@ from src.hypnotist.evaluation import ChaoEvaluation, HuangEvaluation
 
 def f_on_row(row):
     intent = row["intent"]
+    response = row["response"]
     stripped_intent = intent.strip()
 
-    response = row["response"]
+    zou_result = row["automatic_zou_none_label"]
+    huang_result = row["automatic_huang_none_label"]
+    chao_result = row["automatic_chao_none_label"]
 
+    manual_hongyu_safeguard_violation_label = row["manual_hongyu_safeguard_violation_label"]
 
-    if stripped_intent in response:
-        print(stripped_intent)
-        is_A = row["manual_hongyu_safeguard_violation_label"]
-        is_B = (
-            row["manual_hongyu_safeguard_violation_label"]
-            and row["manual_hongyu_relative_truthfulness_label"]
-        )
-        huang_result = row["automatic_huang_none_label"]
-        chao_result = row["automatic_chao_none_label"]
-        # print(is_A, is_B, huang_result, chao_result)
-
-        
-        print(evaluator("", [stripped_intent], [stripped_intent]))
-        print(stripped_intent)
+    if manual_hongyu_safeguard_violation_label and not zou_result and not huang_result and not chao_result:
+        print(row["_id"])
         print(response)
-
-        return True
 
     return False
 
@@ -79,4 +69,4 @@ if __name__ == "__main__":
         )
 
         
-        print(x.value_counts())
+        # print(x.value_counts())
