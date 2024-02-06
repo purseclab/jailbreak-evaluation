@@ -12,8 +12,8 @@ if __name__ == "__main__":
         {
             "publication_id": 2,
             "dataset_id": 2,
-            "model_id": 0,
-            "manual_hongyu_informativeness_label": {"$exists": False},
+            "dataset_version": 0,
+            "model_id": 1,
         }
     )
 
@@ -22,11 +22,11 @@ if __name__ == "__main__":
         #     "manual_hongyu_intention_realization_label"
         # ]
         update_operation = {
-            "$set": {
-                "manual_hongyu_relative_truthfulness_label": False,
-                "manual_hongyu_informativeness_label": False
-            },
-            # "$unset": {"manual_hongyu_intention_realization_label": ""},
+            # "$set": {
+            #     "manual_hongyu_relative_truthfulness_label": False,
+            #     "manual_hongyu_informativeness_label": False
+            # },
+            "$unset": {"automatic_chao_none_label": ""},
         }
         collection.update_one({"_id": document["_id"]}, update_operation)
         print(i)

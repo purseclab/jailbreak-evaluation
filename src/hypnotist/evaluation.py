@@ -66,6 +66,8 @@ class ChaoEvaluation(Evaluation):
         if self.judge_name == "no-judge":
             outputs = [1] * len(intents)
         else:
+            intents[0] = intents[0].strip()
+            responses[0] = responses[0].strip()
             convs_list = [
                 self.create_conv(self.get_judge_prompt(intent, response), intent)
                 for intent, response in zip(intents, responses)

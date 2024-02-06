@@ -1,11 +1,20 @@
 from collections import namedtuple
 import itertools
+from operator import is_
 from urllib import response
 
 import pandas as pd
 from utils import connect_to_mongodb
 from nltk.tokenize import sent_tokenize
 
+import os
+import sys
+def add_proj_to_PYTHONPATH():
+    proj_path = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    sys.path.append(proj_path)
+
+add_proj_to_PYTHONPATH()
+from src.hypnotist.evaluation import ChaoEvaluation, HuangEvaluation
 
 def f_on_row(row):
     intent = row["intent"]
@@ -13,7 +22,23 @@ def f_on_row(row):
 
     response = row["response"]
 
+
     if stripped_intent in response:
+        print(stripped_intent)
+        is_A = row["manual_hongyu_safeguard_violation_label"]
+        is_B = (
+            row["manual_hongyu_safeguard_violation_label"]
+            and row["manual_hongyu_relative_truthfulness_label"]
+        )
+        huang_result = row["automatic_huang_none_label"]
+        chao_result = row["automatic_chao_none_label"]
+        # print(is_A, is_B, huang_result, chao_result)
+
+        
+        print(evaluator("", [stripped_intent], [stripped_intent]))
+        print(stripped_intent)
+        print(response)
+
         return True
 
     return False
@@ -32,6 +57,9 @@ if __name__ == "__main__":
     documents = collection.find({})
     df = pd.DataFrame(documents)
     assert len(df) == 700
+
+    # evaluator = HuangEvaluation("./evaluator", "cuda")
+    evaluator = ChaoEvaluation("gpt-4")
 
     for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 1)]:
         publication_id = run.publication_id
