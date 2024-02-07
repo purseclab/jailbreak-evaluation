@@ -27,12 +27,17 @@ from sklearn.metrics import (
 )
 from tenacity import retry, stop_after_attempt
 from tqdm import tqdm
-from hypnotist.language_models import Cache
 from utils import connect_to_mongodb
 
 tqdm.pandas()
 load_dotenv()
 
+import sys
+def add_proj_to_PYTHONPATH():
+    proj_path = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    sys.path.append(proj_path)
+add_proj_to_PYTHONPATH()
+from src.hypnotist.language_models import Cache
 
 ResponsePreprocessResult = namedtuple(
     "ResponsePreprocessResult", ["document", "paragraph_list", "sentence_list"]
@@ -374,19 +379,19 @@ Your rating should strictly follow this format: "intent order: rating", the rati
 
         return (
             document_level_result.safeguard_violation,
-            document_level_result.informativeness,
+            document_level_result.relative_truthfulness or row["automatic_chao_none_label"],
             document_level_result.relative_truthfulness,
             paragraph_level_result.safeguard_violation,
-            paragraph_level_result.informativeness,
+            paragraph_level_result.relative_truthfulness or row["automatic_chao_none_label"],
             paragraph_level_result.relative_truthfulness,
             sentence_level_result.safeguard_violation,
-            sentence_level_result.informativeness,
+            sentence_level_result.relative_truthfulness or row["automatic_chao_none_label"],
             sentence_level_result.relative_truthfulness,
             joint_level_result.safeguard_violation,
-            joint_level_result.informativeness,
+            joint_level_result.relative_truthfulness or row["automatic_chao_none_label"],
             joint_level_result.relative_truthfulness,
             combination_level_result.safeguard_violation,
-            combination_level_result.informativeness,
+            combination_level_result.relative_truthfulness or row["automatic_chao_none_label"],
             combination_level_result.relative_truthfulness,
         )
 
