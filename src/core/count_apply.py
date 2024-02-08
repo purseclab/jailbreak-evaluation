@@ -14,7 +14,8 @@ def add_proj_to_PYTHONPATH():
     sys.path.append(proj_path)
 
 add_proj_to_PYTHONPATH()
-from src.hypnotist.evaluation import ChaoEvaluation, HuangEvaluation
+from src.hypnotist.evaluation import ChaoEvaluation, HuangEvaluation, ZouEvaluation
+from nltk.tokenize import sent_tokenize
 
 def f_on_row(row):
     intent = row["intent"]
@@ -26,10 +27,26 @@ def f_on_row(row):
     chao_result = row["automatic_chao_none_label"]
 
     manual_hongyu_safeguard_violation_label = row["manual_hongyu_safeguard_violation_label"]
+    manual_hongyu_relative_truthfulness_label = row["manual_hongyu_relative_truthfulness_label"]
 
-    if manual_hongyu_safeguard_violation_label and not zou_result and not huang_result and not chao_result:
+    if manual_hongyu_safeguard_violation_label and manual_hongyu_relative_truthfulness_label and not zou_result:
         print(row["_id"])
-        print(response)
+        # print("Rejection in response")
+        # print("Rejection not in response")
+
+        sentences = sent_tokenize(response)
+        response_with_rejection = " ".join(sentences)
+        print("p", evaluator("", [stripped_intent], [response_with_rejection]))
+
+        sentences_without_rejection = []
+        for sentence in sentences:
+            zou_result = zou_evaluator("", [stripped_intent], [sentence])[0]
+            if zou_result:
+                sentences_without_rejection.append(sentence)
+        response_without_rejection = " ".join(sentences_without_rejection)
+        print("n", evaluator("", [stripped_intent], [response_without_rejection]))
+
+        return True
 
     return False
 
@@ -49,7 +66,8 @@ if __name__ == "__main__":
     assert len(df) == 700
 
     # evaluator = HuangEvaluation("./evaluator", "cuda")
-    evaluator = ChaoEvaluation("gpt-4")
+    evaluator = ChaoEvaluation("gpt-3.5-turbo")
+    zou_evaluator = ZouEvaluation()
 
     for run in [Run(0, 0, 0, 0), Run(1, 1, 0, 0), Run(2, 2, 0, 1)]:
         publication_id = run.publication_id
@@ -69,4 +87,4 @@ if __name__ == "__main__":
         )
 
         
-        # print(x.value_counts())
+        print(x.value_counts())

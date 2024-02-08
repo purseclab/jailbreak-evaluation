@@ -154,6 +154,7 @@ class HuangEvaluation(Evaluation):
             for (intent, response) in zip(intents, responses)
         ]
         results = self.evaluator(res_processed)
+        print(results)
         not_short = [
             1 if len(self.clean_answer(response).split(" ")) > 5 else 0
             for response in responses
