@@ -238,7 +238,13 @@ Here is your rating result:"""
         return conversation
     
     def llama_parse_result(self, response) -> bool:
-        return "1" in response
+        if response.startswith("1"):
+            return True
+        elif response.startswith("0"):
+            return False
+        else:
+            print(response)
+            return False
 
     def parse_response_chunk_multifaceted_output(self, raw_output):
         match = re.findall(r"\d+", raw_output)
