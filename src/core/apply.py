@@ -150,6 +150,11 @@ class LMJudge:
         output = int(match.group(1)) if match else None
 
         if output is None:
+            pattern = r'"Rating": (\d+)'
+            match = re.search(pattern, raw_output)
+            output = int(match.group(1)) if match else None
+
+        if output is None:
             pattern = r"Rating: (\d+)"
             match = re.search(pattern, raw_output)
             output = int(match.group(1)) if match else None
