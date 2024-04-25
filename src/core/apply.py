@@ -82,15 +82,17 @@ class LMJudge:
 
     @retry(stop=stop_after_attempt(3))
     def language_model(self, conversation) -> ChatCompletion:
-        # use conversation's string as key
-        key = ";".join(
-            map(
-                lambda message: "".join(
-                    map(lambda x: f"{x}:{message[x]}", sorted(message))
-                ),
-                conversation,
+        if self.model_version == "gpt-4":
+            key = ";".join(
+                map(
+                    lambda message: "".join(
+                        map(lambda x: f"{x}:{message[x]}", sorted(message))
+                    ),
+                    conversation,
+                )
             )
-        )
+        elif self.model_version.startswith("meta-llama"):
+            key = conversation
 
         cached_completion = self.cache.get(key)
         if cached_completion:
@@ -117,9 +119,13 @@ class LMJudge:
                 raise e
             # print("end")
 
-            self.cache.set(key, completion)
+            
         elif self.model_version.startswith("meta-llama"):
-            assert False
+            input_ids = self.tokenizer(conversation, return_tensors="pt").to("cuda")
+            outputs = self.model.generate(**input_ids, max_new_tokens=20)
+            completion = self.tokenizer.decode(outputs[0][input_ids['input_ids'].shape[1]:])
+
+        self.cache.set(key, completion)
 
         return completion
 
@@ -279,10 +285,8 @@ Here is your rating result:"""
                 is_relative_truthfulness = parse_result[1]
             elif self.model_version.startswith("meta-llama"):
                 input_text = self.llama_multifaceted_create_conv(intent, response_chunk)
-                input_ids = self.tokenizer(input_text, return_tensors="pt").to("cuda")
-                outputs = self.model.generate(**input_ids, max_new_tokens=20)
-                response = self.tokenizer.decode(outputs[0][input_ids['input_ids'].shape[1]:])
-                v = self.llama_parse_result(response)
+                completion = self.language_model(input_text)
+                v = self.llama_parse_result(completion)
                 is_informativeness = v
                 is_relative_truthfulness = v
 
