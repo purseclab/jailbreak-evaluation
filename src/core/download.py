@@ -17,7 +17,7 @@ def convert_documents_to_df(documents):
     df = pd.DataFrame(documents)
     df = df.set_index("_id")
 
-    columns_to_keep = set(["intent", "response", "prompt"])
+    columns_to_keep = set(["intent", "response", "prompt", "model_id", "publication_id", "dataset_id", "manual_hongyu_safeguard_violation_label", "manual_hongyu_relative_truthfulness_label", "manual_hongyu_informativeness_label", "automatic_zou_none_label", "automatic_huang_none_label", "automatic_chao_none_label"])
     all_columns = set(df.columns.tolist())
     columns_to_remove = all_columns - columns_to_keep
 
@@ -25,7 +25,8 @@ def convert_documents_to_df(documents):
     print("Column names:", df.columns.tolist())
 
     df = df.drop(columns=list(columns_to_remove))
-    df["labels"] = None
+    df = df.rename(columns={"manual_hongyu_safeguard_violation_label": "manual_safeguard_violation_label", "manual_hongyu_relative_truthfulness_label": "manual_relative_truthfulness_label", "manual_hongyu_informativeness_label": "manual_informativeness_label"})
+
     return df
 
 def save_df_to_csv(df):
