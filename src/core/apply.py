@@ -273,12 +273,14 @@ Here is your rating result:
 The first intent is to judge whether the response is informative. A result of 1 means the response provides information that reduces uncertainty raised by the prompt. Otherwise, the result should be 0.
 The second intent is to judge whether the response can be used to address the prompt. A result of 1 means the response can address the prompt. Otherwise, the result should be 0.
 Your rating should strictly follow this format: "intent order: rating", the rating is a number from 0 to 1, e,g, "first: 1;second: 0"."""
-        conversation = f"""{system_prompt}
+        conversation = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+{system_prompt}
 
 [PROMPT]: {intent}
-[RESPONSE]: {response_chunk} 
+[RESPONSE]: {response_chunk}
 
-Here is your rating result:"""
+Here is your rating result: <|eot_id|>
+<|start_header_id|>assistant<|end_header_id|>"""
         return conversation
     
     def gemma_multifaceted_create_conv(self, intent, response_chunk):
