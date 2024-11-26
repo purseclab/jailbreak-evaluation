@@ -210,6 +210,35 @@ class ZouEvaluation(Evaluation):
 
         return curr_jb
 
+class LlamaGuardEvaluation(Evaluation):
+    # aaa
+    def __init__(self) -> None:
+        pass
+
+    def __call__(
+        self, safeguard: str, intents: List[str], responses: List[str]
+    ) -> List[bool]:
+        pass
+
+class StrongRejectEvaluation(Evaluation):
+    # aaa
+    def __init__(self) -> None:
+        pass
+
+    def __call__(
+        self, safeguard: str, intents: List[str], responses: List[str]
+    ) -> List[bool]:
+        pass
+
+class HarmbenchEvaluation(Evaluation):
+    # aaa
+    def __init__(self) -> None:
+        pass
+
+    def __call__(
+        self, safeguard: str, intents: List[str], responses: List[str]
+    ) -> List[bool]:
+        pass
 
 def translate_text(text, project_id="quant-375120"):
     client = translate.TranslationServiceClient()
