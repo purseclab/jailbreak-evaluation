@@ -29,11 +29,12 @@ if __name__ == "__main__":
         HuangEvaluation,
         ChaoEvaluation,
         HarmbenchEvaluation,
-        LlamaGuardEvaluation
+        LlamaGuardEvaluation,
+        StrongRejectEvaluation
     )
 
     manual_name_list = ["hongyu"]
-    automatic_name_list = ["zou", "huang", "chao", "harmbench", "llamaguard"]
+    automatic_name_list = ["zou", "huang", "chao", "harmbench", "llamaguard", "strongreject"]
 
     parser = argparse.ArgumentParser(description="Process some integers.")
     parser.add_argument("--mode", choices=["manual", "automatic"], required=True)
@@ -81,6 +82,8 @@ if __name__ == "__main__":
                 evaluation = HarmbenchEvaluation()
             case "llamaguard":
                 evaluation = LlamaGuardEvaluation()
+            case "strongreject":
+                evaluation = StrongRejectEvaluation()
             case _:
                 raise NotImplementedError()
 
