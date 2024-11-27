@@ -5,6 +5,7 @@ import sys
 
 import numpy as np
 
+
 from utils import connect_to_mongodb
 
 
@@ -28,7 +29,7 @@ if __name__ == "__main__":
         HuangEvaluation,
         ChaoEvaluation,
         HarmbenchEvaluation,
-        LlamaguardEvaluation
+        LlamaGuardEvaluation
     )
 
     manual_name_list = ["hongyu"]
@@ -79,7 +80,7 @@ if __name__ == "__main__":
             case "harmbench":
                 evaluation = HarmbenchEvaluation()
             case "llamaguard":
-                evaluation = LlamaguardEvaluation()
+                evaluation = LlamaGuardEvaluation()
             case _:
                 raise NotImplementedError()
 

@@ -10,6 +10,9 @@ from pymongo import UpdateOne
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
+from dotenv import load_dotenv
+
+assert load_dotenv()
 
 @dataclass
 class DataPoint:
