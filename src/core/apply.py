@@ -600,6 +600,9 @@ if __name__ == "__main__":
         "zou",
         "huang",
         "chao",
+        "harmbench",
+        "llamaguard",
+        "strongreject",
         "document",
         "paragraph",
         "sentence",
@@ -612,6 +615,12 @@ if __name__ == "__main__":
             title = r"\texttt{NLU}~\cite{huang_catastrophic_2023}"
         elif evaluation == "chao":
             title = r"\texttt{NLG}~\cite{chao_jailbreaking_2023}"
+        elif evaluation == "harmbench":
+            title = r"\texttt{HarmBench}"
+        elif evaluation == "llamaguard":
+            title = r"\texttt{LlamaGuard}"
+        elif evaluation == "strongreject":
+            title = r"\texttt{StrongReject}"
         else:
             name = f"Multifaceted-{evaluation.capitalize()[0]}L"
             if evaluation == "document":
@@ -654,7 +663,7 @@ if __name__ == "__main__":
                 if metrics == "attacker_a":
                     metrics = "safeguard_violation"
 
-                if evaluation == "zou" or evaluation == "huang" or evaluation == "chao":
+                if evaluation == "zou" or evaluation == "huang" or evaluation == "chao" or evaluation == "harmbench" or evaluation == "llamaguard" or evaluation == "strongreject":
                     metrics_keyword = "none"
                 else:
                     metrics_keyword = metrics
@@ -679,6 +688,9 @@ if __name__ == "__main__":
                         evaluation == "zou"
                         or evaluation == "huang"
                         or evaluation == "chao"
+                        or evaluation == "harmbench"
+                        or evaluation == "llamaguard"
+                        or evaluation == "strongreject"
                     ):
                         y_pred = list(run_rows[f"automatic_{evaluation}_none_label"])
                     else:
@@ -708,6 +720,9 @@ if __name__ == "__main__":
                         evaluation == "zou"
                         or evaluation == "huang"
                         or evaluation == "chao"
+                        or evaluation == "harmbench"
+                        or evaluation == "llamaguard"
+                        or evaluation == "strongreject"
                     ):
                         y_pred = list(
                             ~run_rows[f"automatic_{evaluation}_none_label"].astype(
