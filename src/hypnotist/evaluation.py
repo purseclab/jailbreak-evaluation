@@ -10,8 +10,9 @@ from transformers import AutoModelForSequenceClassification, AutoModelForCausalL
 from transformers import pipeline
 from fastchat.model import get_conversation_template
 from .language_models import ChaoGPT
-from dotenv import load_dotenv
+from .ChatGLMEval import ChatGLMEval
 
+from dotenv import load_dotenv
 
 import typer
 from rich import print
@@ -169,6 +170,25 @@ class HuangEvaluation(Evaluation):
             0.5,
         )
 
+class DANEvaluation(Evaluation):
+    # [1] Do any thing
+    def __init__(self):
+        super().__init__()
+
+        self.evaluator = ChatGLMEval(model_name='ChatGLM6b', prompt_n_shot=15, example_ids="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15", temperature=0.5)
+
+    def __call__(
+        self, safeguard: str, intents: List[str], responses: List[str]
+    ) -> List[bool]:
+        assert len(intents) == 1
+        assert len(responses) == 1
+
+        intent = intents[0]
+        response = responses[0]
+
+        v = self.evaluator.check(intent, response)['label']
+
+        return [v == 1]
 
 class ZouEvaluation(Evaluation):
     # [1] A. Zou, Z. Wang, J. Z. Kolter, and M. Fredrikson, “Universal and Transferable Adversarial Attacks on Aligned Language Models.” arXiv, Jul. 27, 2023. doi: 10.48550/arXiv.2307.15043.
@@ -215,7 +235,6 @@ class ZouEvaluation(Evaluation):
         return curr_jb
 
 class LlamaGuardEvaluation(Evaluation):
-    # aaa
     def __init__(self) -> None:
         super().__init__()
 

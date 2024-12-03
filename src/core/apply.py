@@ -64,12 +64,12 @@ class LMJudge:
         # )
         # self.model_version = "meta-llama/Llama-2-70b-chat-hf"
 
-        # self.openai_client = OpenAI()
+        self.openai_client = OpenAI()
         # self.model_version = "gpt-3.5-turbo"  # "gpt-4"
-        # self.model_version = "gpt-4"  # "gpt-4"
+        self.model_version = "gpt-4o-mini"  # "gpt-4o-mini"
 
         # self.model_version = "meta-llama/Meta-Llama-3-8B"
-        self.model_version = "google/gemma-7b"
+        # self.model_version = "google/gemma-7b"
 
         if self.model_version.startswith("meta-llama") or self.model_version.startswith("google"):
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_version)
@@ -83,7 +83,7 @@ class LMJudge:
 
     @retry(stop=stop_after_attempt(3))
     def language_model(self, conversation) -> ChatCompletion:
-        if self.model_version == "gpt-4":
+        if self.model_version == "gpt-4o-mini":
             key = ";".join(
                 map(
                     lambda message: "".join(
@@ -104,7 +104,7 @@ class LMJudge:
             # raise Exception(f"cache miss: {key}")
 
         # print("start")
-        if self.model_version == "gpt-4":
+        if self.model_version == "gpt-4o-mini":
             try:
                 completion = self.openai_client.chat.completions.create(
                     model=self.model_version,
@@ -125,8 +125,8 @@ class LMJudge:
             input_ids = self.tokenizer(conversation, return_tensors="pt").to("cuda")
             outputs = self.model.generate(**input_ids, max_new_tokens=20)
             completion = self.tokenizer.decode(outputs[0][input_ids['input_ids'].shape[1]:])
-
-        completion = completion.strip()
+            completion = completion.strip()
+            
         self.cache.set(key, completion)
 
         return completion
@@ -325,7 +325,7 @@ Here is your rating result: """
             is_informativeness = False
             is_relative_truthfulness = False
         else:
-            if self.model_version == "gpt-4":
+            if self.model_version == "gpt-4o-mini":
                 conversation = self.multifaceted_create_conv(intent, response_chunk)
                 completion = self.language_model(conversation)
                 raw_output = completion.choices[0].message.content
@@ -349,7 +349,7 @@ Here is your rating result: """
         if skip_safeguard_violation:
             is_safeguard_violation = False
         else:
-            if self.model_version == "gpt-4":
+            if self.model_version == "gpt-4o-mini":
                 is_safeguard_violation = self.response_chunk_is_safeguard_violation(
                     intent, "", response_chunk
                 )
@@ -379,6 +379,7 @@ Here is your rating result: """
         bool,
         bool,
     ]:
+        # return [False]*15
         intent = row["intent"]
         response = row["response"]
         manual_relative_truthfulness_label = row[
@@ -517,7 +518,7 @@ def save_heatmap(cm, filename: str, title: str = None):
     if title:
         plt.title(title)
 
-    plt.savefig(Path("figure", "gpt-4", filename), format="png", bbox_inches="tight")
+    plt.savefig(Path("figure", "gpt-4o-mini", filename), format="png", bbox_inches="tight")
 
 
 if __name__ == "__main__":
@@ -603,6 +604,7 @@ if __name__ == "__main__":
         "harmbench",
         "llamaguard",
         "strongreject",
+        "dan",
         "document",
         "paragraph",
         "sentence",
@@ -621,6 +623,8 @@ if __name__ == "__main__":
             title = r"\texttt{LlamaGuard}"
         elif evaluation == "strongreject":
             title = r"\texttt{StrongReject}"
+        elif evaluation == "dan":
+            title = r"\texttt{DAN}"
         else:
             name = f"Multifaceted-{evaluation.capitalize()[0]}L"
             if evaluation == "document":
@@ -663,7 +667,7 @@ if __name__ == "__main__":
                 if metrics == "attacker_a":
                     metrics = "safeguard_violation"
 
-                if evaluation == "zou" or evaluation == "huang" or evaluation == "chao" or evaluation == "harmbench" or evaluation == "llamaguard" or evaluation == "strongreject":
+                if evaluation == "zou" or evaluation == "huang" or evaluation == "chao" or evaluation == "harmbench" or evaluation == "llamaguard" or evaluation == "strongreject" or evaluation == "dan":
                     metrics_keyword = "none"
                 else:
                     metrics_keyword = metrics
@@ -691,6 +695,7 @@ if __name__ == "__main__":
                         or evaluation == "harmbench"
                         or evaluation == "llamaguard"
                         or evaluation == "strongreject"
+                        or evaluation == "dan"
                     ):
                         y_pred = list(run_rows[f"automatic_{evaluation}_none_label"])
                     else:
@@ -723,6 +728,7 @@ if __name__ == "__main__":
                         or evaluation == "harmbench"
                         or evaluation == "llamaguard"
                         or evaluation == "strongreject"
+                        or evaluation == "dan"
                     ):
                         y_pred = list(
                             ~run_rows[f"automatic_{evaluation}_none_label"].astype(
