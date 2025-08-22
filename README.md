@@ -2,42 +2,6 @@
 
 Evaluate LLM jailbreak responses with manual and automatic judges across multiple datasets. Data are stored in MongoDB; utilities are provided to ingest CSVs, label examples, export for analysis, and run multifaceted scoring.
 
-## Research overview
-Modern LLMs can be jailbroken by prompts or settings that bypass safeguards. Existing jailbreak evaluation methods typically fall into three categories and have notable limitations:
-- String matching (SM): uses deny lists; misses context and yields false negatives when harmful info coexists with words like “illegal.”
-- Natural language understanding (NLU): classifier-based; limited by training coverage and brittle to prompt echoes.
-- Natural language generation (NLG): LLM-as-judge; often collapses to a single binary outcome and may misread refusals vs. harm.
-
-This project introduces a multi-metric framework that evaluates jailbreak outcomes along three axes instead of a single binary label:
-- Safeguard violation (SV): whether the response breaks provider safeguards.
-- Informativeness (I): whether the response provides relevant information toward the malicious intent.
-- Relative truthfulness (RT): whether the information is truthful relative to the intent.
-
-Method (system):
-- Response preprocessing: tokenize into paragraphs and sentences, drop invalid/truncated segments to reduce noise (prompt echoes, partial sentences).
-- NLG-based judging: prompt templates assess SV, I, RT with hierarchical granularity—document level (DL), paragraph level (PL), and sentence level (SL). We also form a joint level (JL) and a combination level (CL: SV@JL with I/RT@PL).
-
-Benchmarks and labels:
-- Datasets from prior jailbreak systems: AdvBench (GCG), MaliciousInstruct (GE), and Representative AdvBench (PAIR), refined to 250 diverse malicious intents (cyberbullying, defamation, physical harm, etc.).
-- Three annotators labeled each item on SV, I, RT using a written guideline (see `Labellin_Guide.md`). Agreement measured via Krippendorff’s alpha (> 0.8 during guide calibration; > 0.819 per group for the final labels).
-
-Baselines and models:
-- Binary baselines: SM, NLU (BERT-BASE-CASED), NLG (GPT-4).
-- Additional evaluators: DAN (ChatGLM-6B), HarmBench, LlamaGuard, StrongReject.
-- Our NLG component tested with GPT-4/GPT-4o-mini and open-source Llama 3-8B-Instruct, Gemma-7B.
-
-Key results (summary):
-- Binary methods average F1: SM ~0.64, NLU ~0.22, NLG ~0.83.
-- Our system (with GPT-4 as judge) outperforms all three, improving average F1 by roughly 45%, 322%, and 12% respectively; open-source judges show reduced F1 on average (−24% for Llama 3-8B-Instruct, −20% for Gemma-7B).
-- Preprocessing (PL/SL) improves performance for both our approach and baselines; CL attains the best overall F1 across actors and metrics.
-
-Common failure modes diagnosed:
-- Prompt echo: models repeating the malicious prompt causes false positives for NLU/NLG; preprocessing mitigates it.
-- Rejection patterns: refusals mixed with harmful details fool SM and sometimes NLU/NLG; segment-wise scoring reduces this bias.
-- Limited evaluator capacity: weaker judges underperform on nuanced harmful content, yielding false negatives.
-
-For full context and figures, see the extended paper in this repository: `full_version_Rethinking_How_to_Evaluate_Language_Model_Jailbreak .pdf`.
-
 ## Quick start
 - Python 3.10+ recommended.
 - Install base deps:
