@@ -92,18 +92,6 @@ CLI entry: `src/core/label.py`
     - `--topic`: one of `safeguard_violation`, `informativeness`, `relative_truthfulness`, `none` (for automatic judges that produce a single decision)
     - `--publication_id`, `--dataset_id`, `--dataset_version`, `--model_id`: integers per the schema
 
-Examples:
-- Manual labeling a single topic:
-    - Optional commands to run:
-        ```powershell
-    python .\src\core\label.py --mode manual --name hongyu --publication_id 1 --dataset_id 1 --dataset_version 0 --model_id 0 --topic safeguard_violation
-        ```
-- Automatic (e.g., Zou):
-    - Optional commands to run:
-        ```powershell
-    python .\src\core\label.py --mode automatic --name zou --publication_id 1 --dataset_id 1 --dataset_version 0 --model_id 0 --topic none
-        ```
-
 Notes:
 - Labels are written back to MongoDB under fields like `manual_hongyu_<topic>_label` or `automatic_<name>_<topic|none>_label`.
 - Some evaluators require GPUs and model downloads:
