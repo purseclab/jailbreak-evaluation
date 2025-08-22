@@ -9,7 +9,11 @@
 
 # jailbreak-evaluation
 
-Evaluate LLM jailbreak responses with manual and automatic judges across multiple datasets. Data are stored in MongoDB; utilities are provided to ingest CSVs, label examples, export for analysis, and run multifaceted scoring.
+The jailbreak-evaluation is an easy-to-use Python package for language model jailbreak evaluation.
+The jailbreak-evaluation is designed for comprehensive and accurate evaluation of language model jailbreak attempts.
+Currently, jailbreak-evaluation support evaluating a language model jailbreak attempt on multiple metrics.
+
+This is the official research repository for "[Rethinking How to Evaluate Language Model Jailbreak](https://arxiv.org/abs/2404.06407)", by Hongyu Cai, Arjun Arunasalam, Leo Y. Lin, Antonio Bianchi, and Z. Berkay Celik.
 
 ## Quick start
 - Python 3.10+ recommended.
