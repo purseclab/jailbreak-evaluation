@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/purseclab/jailbreak-evaluation/main/logo.png">
+</p>
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+![GitHub stars](https://img.shields.io/github/stars/purseclab/jailbreak-evaluation.svg)
+![GitHub forks](https://img.shields.io/github/forks/purseclab/jailbreak-evaluation.svg)
+
+
 # jailbreak-evaluation
 
 Evaluate LLM jailbreak responses with manual and automatic judges across multiple datasets. Data are stored in MongoDB; utilities are provided to ingest CSVs, label examples, export for analysis, and run multifaceted scoring.
