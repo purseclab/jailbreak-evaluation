@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/purseclab/jailbreak-evaluation/main/logo.png">
+  <img src="logo.png">
 </p>
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
