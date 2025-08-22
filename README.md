@@ -170,8 +170,8 @@ If you use jailbreak-evaluation in a scientific publication, we would appreciate
 @article{cai2024rethinking,
   title={Rethinking How to Evaluate Language Model Jailbreak}, 
   author={Hongyu Cai and Arjun Arunasalam and Leo Y. Lin and Antonio Bianchi and Z. Berkay Celik},
-  year={2024},
-  journal={arXiv}
+  year={2025},
+  journal={18th ACM Workshop on Artificial Intelligence and Security (AISec 2025)}
 }
 ```
 
