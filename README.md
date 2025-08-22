@@ -159,10 +159,8 @@ Optional (for certain evaluators/plots):
 
 ## Contributing
 
-Please let us know if you encounter a bug or have any suggestions by [filing an issue](https://github.com/controllability/jailbreak-evaluation/issues).
-
+Please let us know if you encounter a bug or have any suggestions by [filing an issue](https://github.com/purseclab/jailbreak-evaluation/issues).
 We welcome all contributions from bug fixes to new features and extensions.
-
 We expect all contributions discussed in the issue tracker and going through PRs.
 
 ## Cite
