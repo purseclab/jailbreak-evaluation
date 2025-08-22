@@ -47,9 +47,6 @@ Tip: NLTK is used for sentence tokenization. If needed, download punkt once in P
 - `src/hypnotist/`
     - `evaluation.py`: judge implementations: Zou, Huang, Chao (OpenAI), HarmBench (HF), LlamaGuard (HF), StrongReject (OpenAI), DAN (ChatGLM-6B), Manual.
     - `language_models.py`: simple OpenAI cache helper.
-    - `ChatGLMEval.py` and `few_shot_examples.py`: ChatGLM-6B utilities for DAN evaluator.
-- `src/experiment/`
-    - `table_2.py`, `figure.ipynb`, `view.ipynb`: analysis and reproduction utilities.
 
 ## Data model: `DataPoint` (in `src/core/utils.py`)
 Fields stored per record:
@@ -142,9 +139,31 @@ Optional (for certain evaluators/plots):
 - GPU models: ensure CUDA is available for LlamaGuard, HarmBench, and ChatGLM.
 - Schema assertions: if you extend models/publications, update `DataPoint.__post_init__` lists.
 
-## Citation
-If you use this code or data, please cite the repository and paper. A preprint PDF is included in this repo. We will add a BibTeX entry upon publication.
-
 ## Notes
 - We use shared id spaces for `publication_id` and `dataset_id`. Keep them consistent across ingestion and labeling.
 - When adding new models or publications, update the lists and validations in `src/core/utils.py`.
+
+
+## Contributing
+
+Please let us know if you encounter a bug or have any suggestions by [filing an issue](https://github.com/controllability/jailbreak-evaluation/issues).
+
+We welcome all contributions from bug fixes to new features and extensions.
+
+We expect all contributions discussed in the issue tracker and going through PRs.
+
+## Cite
+
+If you use jailbreak-evaluation in a scientific publication, we would appreciate citations to the following paper:
+```
+@article{cai2024rethinking,
+  title={Rethinking How to Evaluate Language Model Jailbreak}, 
+  author={Hongyu Cai and Arjun Arunasalam and Leo Y. Lin and Antonio Bianchi and Z. Berkay Celik},
+  year={2024},
+  journal={arXiv}
+}
+```
+
+## The Team
+
+The jailbreak-evaluation is developed and maintained by [PurSec Lab](https://pursec.cs.purdue.edu/).
