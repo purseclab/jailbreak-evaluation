@@ -119,7 +119,7 @@ Run `src/core/download.py` to write `all_data.csv` and `all_data.json` with core
 Interpreting outputs and levels:
 - DL/PL/SL: document/paragraph/sentence-level labels per metric (SV, I, RT).
 - JL: joint OR across levels; CL: ensemble with SV from JL and I/RT from PL.
-- Aggregated results (accuracy/F1/precision/recall) are printed per baseline and per attacker composite metric.
+- Aggregated results (accuracy/F1/precision/recall) are printed.
 
 ### 5) Reproduce table metrics
 `src/experiment/table_2.py` prints aggregated metrics for selected runs using labels stored in MongoDB.
