@@ -171,7 +171,7 @@ If you use jailbreak-evaluation in a scientific publication, we would appreciate
   title={Rethinking How to Evaluate Language Model Jailbreak}, 
   author={Hongyu Cai and Arjun Arunasalam and Leo Y. Lin and Antonio Bianchi and Z. Berkay Celik},
   year={2025},
-  journal={18th ACM Workshop on Artificial Intelligence and Security (AISec 2025)}
+  journal={Proceedings of the 2025 Workshop on Artificial Intelligence and Security (AISec 2025)}
 }
 ```
 
